@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Tournament {
+  id          String   @id @default(cuid())
+  name        String
+  location    String
+  startDate   DateTime
+  endDate     DateTime
+  status      String   @default("DRAFT") // DRAFT, ACTIVE, FINISHED, ARCHIVED
+  organizer   String   @default("Daniel Baumann / Viva By Baumann")
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  categories  Category[]
+  courts      Court[]
+  settings    TournamentSettings?
+}
+
+model Category {
+  id              String   @id @default(cuid())
+  tournamentId    String
+  tournament      Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  name            String
+  type            String   @default("DUPLA_MASC") // DUPLA_MASC, DUPLA_FEM, DUPLA_MISTA, SIMPLES
+  maxPairs        Int      @default(16)
+  format          String   @default("GROUPS_AND_KNOCKOUT") // GROUPS_AND_KNOCKOUT, KNOCKOUT_ONLY, ROUND_ROBIN_ONLY
+  groupCount      Int      @default(4)
+  advancePerGroup Int      @default(2)
+  bracketSize     Int      @default(8)
+  matchRule       String   @default("ONE_STANDARD_SET_6") // ONE_PRO_SET_9, ONE_STANDARD_SET_6, BEST_OF_3_SETS, SUPER_TIEBREAK_10
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  pairs           Pair[]
+  matches         Match[]
+}
+
+model Athlete {
+  id          String    @id @default(cuid())
+  fullName    String
+  phone       String
+  email       String?
+  gender      String    @default("MALE") // MALE, FEMALE, OTHER
+  birthDate   DateTime?
+  club        String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  pairsAsA1   Pair[]    @relation("Athlete1")
+  pairsAsA2   Pair[]    @relation("Athlete2")
+}
+
+model Pair {
+  id               String   @id @default(cuid())
+  categoryId       String
+  category         Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  athlete1Id       String
+  athlete1         Athlete  @relation("Athlete1", fields: [athlete1Id], references: [id], onDelete: Cascade)
+  athlete2Id       String
+  athlete2         Athlete  @relation("Athlete2", fields: [athlete2Id], references: [id], onDelete: Cascade)
+  seedRanking      Int?
+  status           String   @default("CONFIRMED") // CONFIRMED, WAITLIST, CANCELED
+  registrationDate DateTime @default(now())
+
+  matchesAsA       Match[]  @relation("PairA")
+  matchesAsB       Match[]  @relation("PairB")
+  matchesWon       Match[]  @relation("WinnerPair")
+
+  @@index([categoryId])
+  @@index([athlete1Id])
+  @@index([athlete2Id])
+}
+
+model Court {
+  id           String   @id @default(cuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  name         String
+  type         String   @default("SAND") // SAND, QUICK, INDOOR_SAND
+  status       String   @default("AVAILABLE") // AVAILABLE, OCCUPIED, MAINTENANCE, INACTIVE
+  displayOrder Int      @default(1)
+
+  matches      Match[]
+
+  @@index([tournamentId])
+}
+
+model Match {
+  id                String    @id @default(cuid())
+  categoryId        String
+  category          Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  phase             String    @default("GROUP_STAGE") // GROUP_STAGE, ROUND_OF_32, ROUND_OF_16, QUARTERFINALS, SEMIFINALS, FINAL, THIRD_PLACE
+  groupId           String?
+  round             Int       @default(1)
+  pairAId           String?
+  pairA             Pair?     @relation("PairA", fields: [pairAId], references: [id], onDelete: SetNull)
+  pairBId           String?
+  pairB             Pair?     @relation("PairB", fields: [pairBId], references: [id], onDelete: SetNull)
+  scoreA            Int       @default(0)
+  scoreB            Int       @default(0)
+  setsDetail        String    @default("[]") // JSON string: [{ set: 1, gamesA: 6, gamesB: 4, tiebreakA: null, tiebreakB: null }]
+  winnerPairId      String?
+  winnerPair        Pair?     @relation("WinnerPair", fields: [winnerPairId], references: [id], onDelete: SetNull)
+  status            String    @default("SCHEDULED") // SCHEDULED, WAITING_COURT, WARMUP, LIVE, FINISHED, WALKOVER_A, WALKOVER_B, CANCELED
+  courtId           String?
+  court             Court?    @relation(fields: [courtId], references: [id], onDelete: SetNull)
+  scheduledTime     DateTime?
+  startedAt         DateTime?
+  finishedAt        DateTime?
+  nextMatchId       String?
+  nextMatch         Match?    @relation("NextMatch", fields: [nextMatchId], references: [id], onDelete: SetNull)
+  previousMatches   Match[]   @relation("NextMatch")
+  nextMatchSlot     String?   // PAIR_A, PAIR_B
+  positionInBracket Int?
+
+  @@index([categoryId])
+  @@index([courtId])
+  @@index([status])
+}
+
+model TournamentSettings {
+  id                            String     @id @default(cuid())
+  tournamentId                  String     @unique
+  tournament                    Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  avgMatchDurationMinutes       Int        @default(45)
+  warmupDurationMinutes         Int        @default(5)
+  intervalBetweenMatchesMinutes Int        @default(5)
+  restBetweenMatchesMinutes     Int        @default(30)
+  dailyTimeWindows              String     @default("[{\"date\":\"2026-09-19\",\"startTime\":\"08:00\",\"endTime\":\"22:00\"}]") // JSON
+}
