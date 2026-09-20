@@ -36,6 +36,7 @@ model Category {
   advancePerGroup Int      @default(2)
   bracketSize     Int      @default(8)
   matchRule       String   @default("ONE_STANDARD_SET_6") // ONE_PRO_SET_9, ONE_STANDARD_SET_6, BEST_OF_3_SETS, SUPER_TIEBREAK_10
+  color           String?  @default("#00D2FF")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

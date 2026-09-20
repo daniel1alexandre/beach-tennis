@@ -15,6 +15,7 @@ import {
   Award,
   Pencil,
 } from "lucide-react";
+import { getCategoryTheme } from "@/lib/category-colors";
 
 export default function AthletesClient({
   tournamentId,
@@ -354,62 +355,92 @@ export default function AthletesClient({
         <div className="space-y-6">
           {/* Category Selector Pills */}
           <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCatId(cat.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
-                  selectedCatId === cat.id
-                    ? "bg-[#00D2FF] text-[#060B12] font-black shadow-md shadow-cyan-500/20"
-                    : "bg-[#0C1726] text-slate-400 border border-[#162D4A] hover:text-slate-200"
-                }`}
-              >
-                {cat.name} ({cat.pairs.length}/{cat.maxPairs})
-              </button>
-            ))}
+            {categories.map((cat, idx) => {
+              const catTheme = getCategoryTheme(cat.name, idx, cat.color);
+              const isSelected = selectedCatId === cat.id;
+
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCatId(cat.id)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 ${
+                    isSelected
+                      ? "bg-[#0C1726] text-white border-2 font-black shadow-lg"
+                      : "bg-[#0C1726]/60 text-slate-400 border border-[#162D4A] hover:text-slate-200"
+                  }`}
+                  style={{
+                    borderColor: isSelected ? (cat.color || catTheme.hex) : "#162D4A",
+                    boxShadow: isSelected ? `0 0 15px ${(cat.color || catTheme.hex)}33` : undefined,
+                  }}
+                >
+                  <span
+                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    style={{ backgroundColor: cat.color || catTheme.hex }}
+                  />
+                  <span>{cat.name} ({cat.pairs.length}/{cat.maxPairs})</span>
+                </button>
+              );
+            })}
           </div>
 
-          {currentCategory && (
-            <div className="p-6 rounded-2xl bg-[#0C1726] border border-[#162D4A] space-y-4 shadow-md">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#162D4A] pb-4">
-                <div>
-                  <h3 className="text-base font-extrabold text-white">
-                    Duplas Inscritas: {currentCategory.name}
-                  </h3>
-                  <span className="text-xs text-slate-400">
-                    Limite: {currentCategory.maxPairs} duplas • {currentCategory.pairs.filter((p: any) => p.status === 'CONFIRMED').length} Confirmadas • {currentCategory.pairs.filter((p: any) => p.status === 'WAITLIST').length} Lista de Espera
-                  </span>
+          {currentCategory && (() => {
+            const currentCatTheme = getCategoryTheme(currentCategory.name, 0, currentCategory.color);
+
+            return (
+              <div
+                className="p-6 rounded-2xl bg-[#0C1726] border border-[#162D4A] space-y-4 shadow-md"
+                style={{ borderLeftWidth: "4px", borderLeftColor: currentCategory.color || currentCatTheme.hex }}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#162D4A] pb-4">
+                  <div>
+                    <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+                      <span
+                        className="w-3.5 h-3.5 rounded-full shrink-0"
+                        style={{ backgroundColor: currentCategory.color || currentCatTheme.hex }}
+                      />
+                      Duplas Inscritas: {currentCategory.name}
+                    </h3>
+                    <span className="text-xs text-slate-400">
+                      Limite: {currentCategory.maxPairs} duplas • {currentCategory.pairs.filter((p: any) => p.status === 'CONFIRMED').length} Confirmadas • {currentCategory.pairs.filter((p: any) => p.status === 'WAITLIST').length} Lista de Espera
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => setShowPairModal(true)}
+                    className="px-3.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-[#00D2FF] border border-cyan-500/40 text-xs font-bold transition"
+                  >
+                    + Adicionar Dupla
+                  </button>
                 </div>
 
-                <button
-                  onClick={() => setShowPairModal(true)}
-                  className="px-3.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-[#00D2FF] border border-cyan-500/40 text-xs font-bold transition"
-                >
-                  + Adicionar Dupla
-                </button>
-              </div>
-
-              {currentCategory.pairs.length === 0 ? (
-                <div className="text-center py-12 text-slate-500 text-xs">
-                  Nenhuma dupla inscrita nesta categoria ainda.
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {currentCategory.pairs.map((pair: any, index: number) => {
-                    const isWaitlist = pair.status === "WAITLIST";
-                    return (
-                      <div
-                        key={pair.id}
-                        className={`p-4 rounded-xl border flex items-center justify-between transition-all ${
-                          isWaitlist
-                            ? "bg-[#14120E] border-amber-500/30"
-                            : "bg-[#08111B] border-[#162D4A] hover:border-cyan-500/30"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="w-7 h-7 rounded-lg bg-[#0C1726] text-slate-400 flex items-center justify-center font-mono text-xs font-bold border border-[#162D4A]">
-                            #{index + 1}
-                          </span>
+                {currentCategory.pairs.length === 0 ? (
+                  <div className="text-center py-12 text-slate-500 text-xs">
+                    Nenhuma dupla inscrita nesta categoria ainda.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {currentCategory.pairs.map((pair: any, index: number) => {
+                      const isWaitlist = pair.status === "WAITLIST";
+                      return (
+                        <div
+                          key={pair.id}
+                          className={`p-4 rounded-xl border flex items-center justify-between transition-all ${
+                            isWaitlist
+                              ? "bg-[#14120E] border-amber-500/30"
+                              : "bg-[#08111B] border-[#162D4A] hover:border-cyan-500/30"
+                          }`}
+                          style={{
+                            borderLeftWidth: "4px",
+                            borderLeftColor: currentCategory.color || currentCatTheme.hex,
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span
+                              className="w-7 h-7 rounded-lg bg-[#0C1726] text-slate-400 flex items-center justify-center font-mono text-xs font-bold border border-[#162D4A]"
+                              style={{ color: currentCategory.color || currentCatTheme.hex }}
+                            >
+                              #{index + 1}
+                            </span>
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="font-extrabold text-sm text-white">
@@ -465,7 +496,8 @@ export default function AthletesClient({
                 </div>
               )}
             </div>
-          )}
+          );
+        })()}
         </div>
       )}
 

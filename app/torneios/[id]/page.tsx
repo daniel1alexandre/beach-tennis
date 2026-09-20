@@ -298,9 +298,14 @@ export default async function TournamentDashboardPage({
                   <div
                     key={cat.id}
                     className="p-4 rounded-xl bg-[#09111C] border border-[#162D4A] flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-cyan-500/30 transition"
+                    style={{ borderLeftWidth: "4px", borderLeftColor: cat.color || "#00D2FF" }}
                   >
                     <div>
                       <div className="flex items-center gap-2">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: cat.color || "#00D2FF" }}
+                        />
                         <h4 className="font-extrabold text-sm text-white">{cat.name}</h4>
                         <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
                           {cat.type === "DUPLA_MASC"

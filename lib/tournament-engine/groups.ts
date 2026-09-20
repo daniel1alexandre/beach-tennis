@@ -8,6 +8,61 @@ export interface PairForGroup {
 }
 
 /**
+ * Determina a quantidade oficial de grupos segundo o Regulamento CBT (Beach Tennis).
+ * A regra oficial estipula prioritariamente grupos de 3 ou 4 duplas:
+ * - 2 a 5 duplas: 1 Grupo único (Round-Robin todos contra todos)
+ * - 6 a 8 duplas: 2 Grupos (3 a 4 duplas por grupo)
+ * - 9 a 11 duplas: 3 Grupos (3 a 4 duplas por grupo)
+ * - 12 a 15 duplas: 4 Grupos (3 a 4 duplas por grupo)
+ * - 16 a 19 duplas: 5 Grupos (3 a 4 duplas por grupo)
+ * - 20 a 23 duplas: 6 Grupos (3 a 4 duplas por grupo)
+ * - 24 a 27 duplas: 7 Grupos (3 a 4 duplas por grupo)
+ * - 28 a 32 duplas: 8 Grupos (3 a 4 duplas por grupo)
+ * - > 32 duplas: floor(pairCount / 3) grupos
+ */
+export function calculateCBTGroupCount(pairCount: number): {
+  groupCount: number;
+  advancePerGroup: number;
+  bracketSize: number;
+  description: string;
+} {
+  if (pairCount <= 1) {
+    return { groupCount: 1, advancePerGroup: 1, bracketSize: 2, description: "1 dupla (insuficiente para chave)" };
+  }
+  if (pairCount <= 5) {
+    return { groupCount: 1, advancePerGroup: 2, bracketSize: 2, description: "1 Grupo único (todos contra todos)" };
+  }
+  if (pairCount <= 8) {
+    return { groupCount: 2, advancePerGroup: 2, bracketSize: 4, description: "2 Grupos (3 a 4 duplas/grupo -> Semis)" };
+  }
+  if (pairCount <= 11) {
+    return { groupCount: 3, advancePerGroup: 2, bracketSize: 8, description: "3 Grupos (3 a 4 duplas/grupo -> Quartas)" };
+  }
+  if (pairCount <= 15) {
+    return { groupCount: 4, advancePerGroup: 2, bracketSize: 8, description: "4 Grupos (3 a 4 duplas/grupo -> Quartas)" };
+  }
+  if (pairCount <= 19) {
+    return { groupCount: 5, advancePerGroup: 2, bracketSize: 16, description: "5 Grupos (3 a 4 duplas/grupo -> Oitavas)" };
+  }
+  if (pairCount <= 23) {
+    return { groupCount: 6, advancePerGroup: 2, bracketSize: 16, description: "6 Grupos (3 a 4 duplas/grupo -> Oitavas)" };
+  }
+  if (pairCount <= 27) {
+    return { groupCount: 7, advancePerGroup: 2, bracketSize: 16, description: "7 Grupos (3 a 4 duplas/grupo -> Oitavas)" };
+  }
+  if (pairCount <= 32) {
+    return { groupCount: 8, advancePerGroup: 2, bracketSize: 16, description: "8 Grupos (3 a 4 duplas/grupo -> Oitavas)" };
+  }
+  const groups = Math.max(1, Math.floor(pairCount / 3));
+  return {
+    groupCount: groups,
+    advancePerGroup: 2,
+    bracketSize: 32,
+    description: `${groups} Grupos (norma CBT 3-4 duplas/grupo)`,
+  };
+}
+
+/**
  * Distributes pairs into groups respecting CBT (Confederação Brasileira de Tennis) Beach Tennis Regulations:
  * 1. Cabeças de Chave (Seeds) distribution:
  *    - Cabeça 1 obrigatoriamente no Grupo A (Posição 1)

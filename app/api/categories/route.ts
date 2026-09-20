@@ -14,6 +14,7 @@ export async function POST(req: Request) {
       advancePerGroup,
       bracketSize,
       matchRule,
+      color,
     } = body;
 
     if (!tournamentId || !name) {
@@ -34,6 +35,7 @@ export async function POST(req: Request) {
         advancePerGroup: parseInt(advancePerGroup) || 2,
         bracketSize: parseInt(bracketSize) || 8,
         matchRule: matchRule || "ONE_STANDARD_SET_6",
+        color: color || "#00D2FF",
       },
     });
 
@@ -60,6 +62,7 @@ export async function PATCH(req: Request) {
       advancePerGroup,
       bracketSize,
       matchRule,
+      color,
     } = body;
 
     if (!id) {
@@ -80,6 +83,7 @@ export async function PATCH(req: Request) {
     if (bracketSize !== undefined)
       updateData.bracketSize = parseInt(bracketSize);
     if (matchRule !== undefined) updateData.matchRule = matchRule;
+    if (color !== undefined) updateData.color = color;
 
     const updated = await prisma.category.update({
       where: { id },

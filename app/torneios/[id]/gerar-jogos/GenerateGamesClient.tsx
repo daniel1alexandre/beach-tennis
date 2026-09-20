@@ -12,13 +12,17 @@ import {
   Layers,
   ChevronRight,
   ShieldAlert,
+  RotateCcw,
+  Palette,
 } from "lucide-react";
 import {
   calculateGroupStandings,
   distributePairsIntoGroups,
+  calculateCBTGroupCount,
 } from "@/lib/tournament-engine/groups";
 import { formatPairName } from "@/lib/tournament-engine/types";
 import { MatchPhaseLabels } from "@/lib/enums";
+import { getCategoryTheme } from "@/lib/category-colors";
 
 export default function GenerateGamesClient({
   tournamentId,
@@ -81,6 +85,42 @@ export default function GenerateGamesClient({
     }
   };
 
+  const handleClearResults = async () => {
+    if (!currentCategory) return;
+    const confirmClear = window.confirm(
+      `Deseja realmente limpar e zerar todos os resultados da categoria "${currentCategory.name}"?\n\nAs partidas continuarão existindo e os placares voltarão para 0 × 0.`
+    );
+    if (!confirmClear) return;
+
+    setLoading(true);
+    setErrorBanner(null);
+    setSuccessBanner(null);
+
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          categoryId: currentCategory.id,
+          action: "CLEAR_RESULTS",
+        }),
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        setSuccessBanner(json.message || "Resultados limpos com sucesso!");
+        router.refresh();
+      } else {
+        setErrorBanner(json.error || "Erro ao limpar resultados da categoria.");
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorBanner("Erro ao comunicar com o servidor para limpar resultados.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!currentCategory) {
     return (
       <div className="p-8 text-center text-zinc-400">
@@ -127,24 +167,37 @@ export default function GenerateGamesClient({
 
       {/* Category Selection Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => {
-              setSelectedCatId(cat.id);
-              setErrorBanner(null);
-              setSuccessBanner(null);
-              setWarningBypassNeeded(false);
-            }}
-            className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
-              selectedCatId === cat.id
-                ? "bg-[#00D2FF] text-[#060B12] font-black shadow-md shadow-cyan-500/20"
-                : "bg-[#0C1726] text-slate-400 border border-[#162D4A] hover:text-slate-200"
-            }`}
-          >
-            {cat.name} ({cat.pairs.length} duplas)
-          </button>
-        ))}
+        {categories.map((cat, idx) => {
+          const catTheme = getCategoryTheme(cat.name, idx, cat.color);
+          const isSelected = selectedCatId === cat.id;
+
+          return (
+            <button
+              key={cat.id}
+              onClick={() => {
+                setSelectedCatId(cat.id);
+                setErrorBanner(null);
+                setSuccessBanner(null);
+                setWarningBypassNeeded(false);
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 ${
+                isSelected
+                  ? "bg-[#0C1726] text-white border-2 font-black shadow-lg"
+                  : "bg-[#0C1726]/60 text-slate-400 border border-[#162D4A] hover:text-slate-200"
+              }`}
+              style={{
+                borderColor: isSelected ? (cat.color || catTheme.hex) : "#162D4A",
+                boxShadow: isSelected ? `0 0 15px ${(cat.color || catTheme.hex)}33` : undefined,
+              }}
+            >
+              <span
+                className="w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ backgroundColor: cat.color || catTheme.hex }}
+              />
+              <span>{cat.name} ({cat.pairs.length} duplas)</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Alerts */}
@@ -175,58 +228,91 @@ export default function GenerateGamesClient({
       )}
 
       {/* Action Strip */}
-      <div className="p-5 rounded-2xl bg-[#0C1726] border border-[#162D4A] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-md">
-        <div>
-          <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
-            <Layers className="w-4 h-4 text-[#00D2FF]" />
-            Configuração de Sorteio: {currentCategory.name}
-          </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {currentCategory.pairs.length} duplas inscritas • {currentCategory.groupCount} grupos previstos • avança top {currentCategory.advancePerGroup}
-          </p>
-        </div>
+      {(() => {
+        const cbtRule = calculateCBTGroupCount(currentCategory.pairs.length);
+        const activeTheme = getCategoryTheme(
+          currentCategory.name,
+          0,
+          currentCategory.color
+        );
 
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center bg-[#08111B] border border-[#162D4A] rounded-xl p-1 text-xs">
-            <button
-              onClick={() => setGenerationMode("SERPENTINE")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                generationMode === "SERPENTINE"
-                  ? "bg-[#00D2FF] text-[#060B12] font-black"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Serpentina (Cabeças)
-            </button>
-            <button
-              onClick={() => setGenerationMode("RANDOM")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                generationMode === "RANDOM"
-                  ? "bg-[#00D2FF] text-[#060B12] font-black"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Sorteio Aleatório
-            </button>
+        return (
+          <div
+            className="p-5 rounded-2xl bg-[#0C1726] border border-[#162D4A] flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-md"
+            style={{ borderLeftWidth: "4px", borderLeftColor: currentCategory.color || activeTheme.hex }}
+          >
+            <div>
+              <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
+                <span
+                  className="w-3.5 h-3.5 rounded-full shrink-0"
+                  style={{ backgroundColor: currentCategory.color || activeTheme.hex }}
+                />
+                Configuração de Sorteio: {currentCategory.name}
+              </h3>
+              <p className="text-xs text-slate-400 mt-1 flex items-center gap-2 flex-wrap">
+                <span>{currentCategory.pairs.length} duplas confirmadas</span>
+                <span>•</span>
+                <span className="text-[#00D2FF] font-semibold">
+                  Sorteio CBT Automático: <strong>{cbtRule.groupCount} grupos</strong> ({cbtRule.description})
+                </span>
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="flex items-center bg-[#08111B] border border-[#162D4A] rounded-xl p-1 text-xs">
+                <button
+                  onClick={() => setGenerationMode("SERPENTINE")}
+                  className={`px-3 py-1.5 rounded-lg font-bold transition ${
+                    generationMode === "SERPENTINE"
+                      ? "bg-[#00D2FF] text-[#060B12] font-black"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Serpentina (Cabeças)
+                </button>
+                <button
+                  onClick={() => setGenerationMode("RANDOM")}
+                  className={`px-3 py-1.5 rounded-lg font-bold transition ${
+                    generationMode === "RANDOM"
+                      ? "bg-[#00D2FF] text-[#060B12] font-black"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Aleatório
+                </button>
+              </div>
+
+              <button
+                onClick={() => handleGenerate("GROUPS")}
+                disabled={loading}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#00D2FF] to-[#0099FF] hover:from-[#33DDFF] hover:to-[#1AA3FF] text-[#060B12] font-black text-xs transition shadow-md shadow-cyan-500/20 disabled:opacity-50 active:scale-95"
+                title={`Sortear ${cbtRule.groupCount} grupos conforme norma CBT para ${currentCategory.pairs.length} duplas`}
+              >
+                {loading ? "Gerando..." : `Sortear Grupos CBT (${cbtRule.groupCount}G)`}
+              </button>
+
+              <button
+                onClick={() => handleGenerate("BRACKET")}
+                disabled={loading}
+                className="px-4 py-2 rounded-xl bg-[#08111B] hover:bg-[#13253C] border border-cyan-500/40 text-[#00D2FF] font-black text-xs transition disabled:opacity-50"
+              >
+                {loading ? "Processando..." : "Gerar Mata-Mata"}
+              </button>
+
+              {/* Botão para Limpar Resultados Informados da Categoria */}
+              <button
+                onClick={handleClearResults}
+                disabled={loading}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-bold text-xs transition disabled:opacity-50 active:scale-95"
+                title="Zerar e limpar todos os placares e resultados informados desta categoria"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
+                <span>Limpar Resultados</span>
+              </button>
+            </div>
           </div>
-
-          <button
-            onClick={() => handleGenerate("GROUPS")}
-            disabled={loading}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#00D2FF] to-[#0099FF] hover:from-[#33DDFF] hover:to-[#1AA3FF] text-[#060B12] font-black text-xs transition shadow-md shadow-cyan-500/20 disabled:opacity-50 active:scale-95"
-          >
-            {loading ? "Gerando..." : "Gerar / Sortear Grupos"}
-          </button>
-
-          <button
-            onClick={() => handleGenerate("BRACKET")}
-            disabled={loading}
-            className="px-4 py-2 rounded-xl bg-[#08111B] hover:bg-[#13253C] border border-cyan-500/40 text-[#00D2FF] font-black text-xs transition disabled:opacity-50"
-          >
-            {loading ? "Processando..." : "Gerar Chave Mata-Mata"}
-          </button>
-        </div>
-      </div>
+        );
+      })()}
 
       {/* 1. SEÇÃO DE GRUPOS & TABELAS DE CLASSIFICAÇÃO (RN-004) */}
       <div className="space-y-4">

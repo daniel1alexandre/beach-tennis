@@ -4,6 +4,7 @@ import {
   distributePairsIntoGroups,
   generateRoundRobinMatches,
   calculateGroupStandings,
+  calculateCBTGroupCount,
 } from "@/lib/tournament-engine/groups";
 import {
   buildKnockoutBracket,
@@ -36,6 +37,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Categoria não encontrada" }, { status: 404 });
     }
 
+    if (action === "CLEAR_RESULTS") {
+      // Zerar e limpar todos os placares e resultados da categoria especificada
+      const updated = await prisma.match.updateMany({
+        where: { categoryId },
+        data: {
+          scoreA: 0,
+          scoreB: 0,
+          winnerPairId: null,
+          status: "SCHEDULED",
+          setsDetail: "[]",
+          startedAt: null,
+          finishedAt: null,
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: `Todos os resultados da categoria foram zerados com sucesso (${updated.count} partidas limpas).`,
+      });
+    }
+
     // RN-006: Checagem de integridade de regeração
     const activeOrFinishedMatches = category.matches.filter(
       (m) =>
@@ -63,6 +85,20 @@ export async function POST(req: Request) {
         );
       }
 
+      // Cálculo oficial CBT: quantidade de grupos conforme a quantidade de duplas inscritas
+      const cbtRule = calculateCBTGroupCount(category.pairs.length);
+      const effectiveGroupCount = cbtRule.groupCount;
+
+      // Sincroniza os parâmetros de grupo e mata-mata na categoria
+      await prisma.category.update({
+        where: { id: categoryId },
+        data: {
+          groupCount: effectiveGroupCount,
+          advancePerGroup: cbtRule.advancePerGroup,
+          bracketSize: cbtRule.bracketSize,
+        },
+      });
+
       // Delete existing group stage matches for this category
       await prisma.match.deleteMany({
         where: {
@@ -71,10 +107,10 @@ export async function POST(req: Request) {
         },
       });
 
-      // 1. Distribute into groups
+      // 1. Distribute into groups conforme regras oficiais da CBT
       const distributed = distributePairsIntoGroups(
         category.pairs as any,
-        category.groupCount,
+        effectiveGroupCount,
         mode === "RANDOM" ? "RANDOM" : "SERPENTINE"
       );
 

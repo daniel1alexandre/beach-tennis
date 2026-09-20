@@ -218,7 +218,7 @@ export default function ScheduleClient({
 
   // Calculate official schedule summary by category
   const officialCategorySchedule = tournament.categories.map((cat: any, idx: number) => {
-    const catTheme = getCategoryTheme(cat.name, idx);
+    const catTheme = getCategoryTheme(cat.name, idx, cat.color);
     const catMatchesWithTime = cat.matches
       .filter((m: any) => m.scheduledTime)
       .sort(
@@ -485,7 +485,7 @@ export default function ScheduleClient({
 
                 <div className="flex gap-2.5 overflow-x-auto pb-1 no-scrollbar">
                   {queueMatches.map((m: any, i: number) => {
-                    const theme = getCategoryTheme(m.category?.name, i);
+                    const theme = getCategoryTheme(m.category?.name, i, m.category?.color);
                     return (
                       <div
                         key={m.id}
@@ -579,7 +579,7 @@ export default function ScheduleClient({
                         });
 
                         const theme = match
-                          ? getCategoryTheme(match.category?.name)
+                          ? getCategoryTheme(match.category?.name, 0, match.category?.color)
                           : null;
 
                         return (
@@ -853,7 +853,7 @@ export default function ScheduleClient({
             {tournament.categories
               .find((c: any) => c.id === selectedCatId)
               ?.matches.map((m: any, i: number) => {
-                const theme = getCategoryTheme(m.category?.name, i);
+                const theme = getCategoryTheme(m.category?.name, i, m.category?.color);
                 const time = m.scheduledTime
                   ? new Date(m.scheduledTime).toLocaleTimeString("pt-BR", {
                       hour: "2-digit",

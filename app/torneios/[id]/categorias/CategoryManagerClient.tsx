@@ -11,13 +11,16 @@ import {
   CheckCircle2,
   X,
   Pencil,
+  Palette,
+  Sparkles,
 } from "lucide-react";
 import {
   CategoryTypeLabels,
   CategoryFormatLabels,
   MatchRuleLabels,
 } from "@/lib/enums";
-import { getCategoryTheme } from "@/lib/category-colors";
+import { getCategoryTheme, CATEGORY_PALETTE } from "@/lib/category-colors";
+import { calculateCBTGroupCount } from "@/lib/tournament-engine/groups";
 
 interface CategoryItem {
   id: string;
@@ -29,6 +32,7 @@ interface CategoryItem {
   advancePerGroup: number;
   bracketSize: number;
   matchRule: string;
+  color?: string | null;
   _count: { pairs: number; matches: number };
 }
 
@@ -55,6 +59,7 @@ export default function CategoryManagerClient({
     advancePerGroup: 2,
     bracketSize: 4,
     matchRule: "ONE_STANDARD_SET_6",
+    color: "#00D2FF",
   });
 
   // Handle Create Category
@@ -81,6 +86,7 @@ export default function CategoryManagerClient({
           advancePerGroup: 2,
           bracketSize: 4,
           matchRule: "ONE_STANDARD_SET_6",
+          color: "#00D2FF",
         });
         router.refresh();
       } else {
@@ -150,7 +156,7 @@ export default function CategoryManagerClient({
             Gestão de Categorias
           </h2>
           <p className="text-xs sm:text-sm text-slate-400">
-            Defina os tipos de gênero, número de grupos, regras CBT de avanço e pontuação por categoria
+            Defina tipos, escolha a cor exclusiva da categoria e acompanhe as regras CBT de grupos e avanço
           </p>
         </div>
 
@@ -166,16 +172,23 @@ export default function CategoryManagerClient({
       {/* Categories Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {categories.map((cat, idx) => {
-          const theme = getCategoryTheme(cat.name, idx);
+          const theme = getCategoryTheme(cat.name, idx, cat.color);
+          const cbtInfo = calculateCBTGroupCount(cat._count.pairs);
 
           return (
             <div
               key={cat.id}
               className={`p-6 rounded-2xl bg-[#0C1726] border ${theme.border} hover:border-cyan-400/50 transition-all shadow-md flex flex-col justify-between`}
+              style={{ borderLeftWidth: "4px", borderLeftColor: cat.color || theme.hex }}
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="w-3.5 h-3.5 rounded-full shadow-sm"
+                      style={{ backgroundColor: cat.color || theme.hex }}
+                      title={`Cor da Categoria: ${cat.color || theme.hex}`}
+                    />
                     <h3 className="text-lg font-black text-white">{cat.name}</h3>
                     <span className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full ${theme.badge}`}>
                       {CategoryTypeLabels[cat.type] || cat.type}
@@ -185,9 +198,14 @@ export default function CategoryManagerClient({
                   <div className="flex items-center gap-1">
                     {/* Botão de Editar Categoria */}
                     <button
-                      onClick={() => setEditingCategory({ ...cat })}
+                      onClick={() =>
+                        setEditingCategory({
+                          ...cat,
+                          color: cat.color || theme.hex,
+                        })
+                      }
                       className="p-1.5 rounded-lg text-slate-400 hover:text-[#00D2FF] hover:bg-cyan-500/10 transition"
-                      title="Editar Categoria"
+                      title="Editar Categoria e Cor"
                     >
                       <Pencil className="w-4 h-4" />
                     </button>
@@ -216,7 +234,7 @@ export default function CategoryManagerClient({
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[11px]">Grupos / Avanço CBT:</span>
+                    <span className="text-slate-400 block text-[11px]">Grupos Sorteados:</span>
                     <span className="font-bold text-[#00D2FF]">
                       {cat.groupCount} grupos • avança top {cat.advancePerGroup}
                     </span>
@@ -227,6 +245,16 @@ export default function CategoryManagerClient({
                       {cat._count.pairs} / {cat.maxPairs} duplas inscritas
                     </span>
                   </div>
+                </div>
+
+                {/* Banner Regra CBT Oficial */}
+                <div className="mt-2 p-2.5 rounded-xl bg-[#08111B] border border-[#162D4A] text-[11px] flex items-center justify-between text-slate-300">
+                  <span className="font-semibold text-slate-400">
+                    🏆 Sorteio Regra CBT ({cat._count.pairs} duplas):
+                  </span>
+                  <span className="font-bold text-[#00D2FF]">
+                    {cbtInfo.description}
+                  </span>
                 </div>
               </div>
 
@@ -257,13 +285,13 @@ export default function CategoryManagerClient({
               Cadastrar Nova Categoria
             </h3>
             <p className="text-xs text-slate-400 mb-4">
-              Configure as regras de grupo, mata-mata e limite de inscritos
+              Configure as regras de grupo, cor visual e limite de inscritos
             </p>
 
             <form onSubmit={handleCreate} className="space-y-4 text-xs">
               <div>
                 <label className="block font-semibold text-slate-300 mb-1">
-                  Nome da Categoria
+                  Nome da Categoria *
                 </label>
                 <input
                   type="text"
@@ -273,6 +301,42 @@ export default function CategoryManagerClient({
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
+              </div>
+
+              {/* Seletor de Cor da Categoria */}
+              <div>
+                <label className="block font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+                  <Palette className="w-3.5 h-3.5 text-[#00D2FF]" />
+                  <span>Cor da Categoria (Identidade Visual & Cards de Atletas)</span>
+                </label>
+                <div className="flex items-center gap-2 flex-wrap p-2.5 rounded-xl bg-[#08111B] border border-[#162D4A]">
+                  {CATEGORY_PALETTE.map((pal) => {
+                    const isSelected = formData.color.toLowerCase() === pal.hex.toLowerCase();
+                    return (
+                      <button
+                        type="button"
+                        key={pal.hex}
+                        onClick={() => setFormData({ ...formData, color: pal.hex })}
+                        className={`w-7 h-7 rounded-lg transition-transform flex items-center justify-center ${
+                          isSelected ? "scale-110 ring-2 ring-white shadow-md" : "hover:scale-105 opacity-80"
+                        }`}
+                        style={{ backgroundColor: pal.hex }}
+                        title={pal.name}
+                      >
+                        {isSelected && <span className="w-2 h-2 rounded-full bg-black/70" />}
+                      </button>
+                    );
+                  })}
+                  <div className="flex items-center gap-1.5 ml-auto">
+                    <span className="text-[10px] text-slate-400">Custom:</span>
+                    <input
+                      type="color"
+                      value={formData.color}
+                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                      className="w-7 h-7 rounded-lg cursor-pointer bg-transparent border-0 p-0"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -313,7 +377,7 @@ export default function CategoryManagerClient({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-slate-300 mb-1">
-                    Quantidade de Grupos
+                    Grupos Previstos (Sorteio Automático CBT)
                   </label>
                   <input
                     type="number"
@@ -345,6 +409,10 @@ export default function CategoryManagerClient({
                     className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                   />
                 </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-[#08111B] border border-cyan-500/30 text-[11px] text-slate-300">
+                ⚡ <strong>Regra Oficial CBT:</strong> No momento do sorteio da chave, a quantidade de grupos será ajustada automaticamente conforme a quantidade exata de duplas confirmadas (3 a 4 duplas por grupo).
               </div>
 
               <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#162D4A]">
@@ -379,11 +447,12 @@ export default function CategoryManagerClient({
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="text-lg font-black text-white mb-1">
-              Editar Categoria
+            <h3 className="text-lg font-black text-white mb-1 flex items-center gap-2">
+              <Pencil className="w-4 h-4 text-[#00D2FF]" />
+              Editar Categoria & Cor
             </h3>
             <p className="text-xs text-slate-400 mb-4">
-              Atualize as configurações e parâmetros de disputa da categoria
+              Atualize o nome, cor de identificação e parâmetros de disputa
             </p>
 
             <form onSubmit={handleEdit} className="space-y-4 text-xs">
@@ -400,6 +469,47 @@ export default function CategoryManagerClient({
                   }
                   className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
+              </div>
+
+              {/* Seletor de Cor da Categoria */}
+              <div>
+                <label className="block font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+                  <Palette className="w-3.5 h-3.5 text-[#00D2FF]" />
+                  <span>Escolha a Cor da Categoria (Respeitada em Cards e Atletas)</span>
+                </label>
+                <div className="flex items-center gap-2 flex-wrap p-2.5 rounded-xl bg-[#08111B] border border-[#162D4A]">
+                  {CATEGORY_PALETTE.map((pal) => {
+                    const currentHex = editingCategory.color || "#00D2FF";
+                    const isSelected = currentHex.toLowerCase() === pal.hex.toLowerCase();
+                    return (
+                      <button
+                        type="button"
+                        key={pal.hex}
+                        onClick={() =>
+                          setEditingCategory({ ...editingCategory, color: pal.hex })
+                        }
+                        className={`w-7 h-7 rounded-lg transition-transform flex items-center justify-center ${
+                          isSelected ? "scale-110 ring-2 ring-white shadow-md" : "hover:scale-105 opacity-80"
+                        }`}
+                        style={{ backgroundColor: pal.hex }}
+                        title={pal.name}
+                      >
+                        {isSelected && <span className="w-2 h-2 rounded-full bg-black/70" />}
+                      </button>
+                    );
+                  })}
+                  <div className="flex items-center gap-1.5 ml-auto">
+                    <span className="text-[10px] text-slate-400">Custom:</span>
+                    <input
+                      type="color"
+                      value={editingCategory.color || "#00D2FF"}
+                      onChange={(e) =>
+                        setEditingCategory({ ...editingCategory, color: e.target.value })
+                      }
+                      className="w-7 h-7 rounded-lg cursor-pointer bg-transparent border-0 p-0"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
