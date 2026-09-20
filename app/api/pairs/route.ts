@@ -171,6 +171,43 @@ export async function POST(req: Request) {
   }
 }
 
+export async function PATCH(req: Request) {
+  try {
+    const body = await req.json();
+    const { id, athlete1Id, athlete2Id, seedRanking, status } = body;
+
+    if (!id) {
+      return NextResponse.json({ error: "ID da dupla é obrigatório" }, { status: 400 });
+    }
+
+    if (athlete1Id && athlete2Id && athlete1Id === athlete2Id) {
+      return NextResponse.json(
+        { error: "Selecione dois atletas distintos para formar a dupla" },
+        { status: 400 }
+      );
+    }
+
+    const updateData: any = {};
+    if (athlete1Id) updateData.athlete1Id = athlete1Id;
+    if (athlete2Id) updateData.athlete2Id = athlete2Id;
+    if (seedRanking !== undefined) {
+      updateData.seedRanking = seedRanking ? parseInt(seedRanking) : null;
+    }
+    if (status) updateData.status = status;
+
+    const updated = await prisma.pair.update({
+      where: { id },
+      data: updateData,
+      include: { athlete1: true, athlete2: true },
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("Erro ao atualizar dupla:", error);
+    return NextResponse.json({ error: "Erro ao atualizar dupla" }, { status: 500 });
+  }
+}
+
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

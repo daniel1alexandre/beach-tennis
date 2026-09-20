@@ -116,7 +116,7 @@ export default function GenerateGamesClient({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-            <GitBranch className="w-6 h-6 text-emerald-400" />
+            <GitBranch className="w-6 h-6 text-[#00D2FF]" />
             Gerador de Jogos & Chaveamento
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400">

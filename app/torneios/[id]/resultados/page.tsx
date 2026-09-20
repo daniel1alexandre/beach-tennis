@@ -35,7 +35,7 @@ export default async function ResultsPage({
   if (!tournament) notFound();
 
   return (
-    <div className="min-h-screen bg-[#090E0B] text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-[#060B12] text-slate-100 flex flex-col">
       <TournamentNav
         tournamentId={tournament.id}
         tournamentName={tournament.name}

@@ -38,6 +38,7 @@ export default function AthletesClient({
   const [showPairModal, setShowPairModal] = useState(false);
   const [showAthleteModal, setShowAthleteModal] = useState(false);
   const [editingAthlete, setEditingAthlete] = useState<any | null>(null);
+  const [editingPair, setEditingPair] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -96,6 +97,42 @@ export default function AthletesClient({
     } catch (err) {
       console.error(err);
       setErrorMessage("Erro de comunicação com o servidor.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle Save Edited Pair
+  const handleSaveEditedPair = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPair) return;
+    setErrorMessage(null);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/pairs", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingPair.id,
+          athlete1Id: editingPair.athlete1Id,
+          athlete2Id: editingPair.athlete2Id,
+          seedRanking: editingPair.seedRanking || null,
+          status: editingPair.status,
+        }),
+      });
+
+      if (res.ok) {
+        setEditingPair(null);
+        setSuccessMessage("Dupla atualizada com sucesso!");
+        router.refresh();
+      } else {
+        const err = await res.json();
+        setErrorMessage(err.error || "Erro ao atualizar dupla");
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Erro ao conectar com o servidor.");
     } finally {
       setLoading(false);
     }
@@ -239,11 +276,11 @@ export default function AthletesClient({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-            <Users className="w-6 h-6 text-emerald-400" />
+            <Users className="w-6 h-6 text-[#00D2FF]" />
             Atletas & Inscrição de Duplas
           </h2>
-          <p className="text-xs sm:text-sm text-zinc-400">
-            Gerencie o banco global de atletas, cabeças de chave e importação em lote
+          <p className="text-xs sm:text-sm text-slate-400">
+            Gerencie o banco global de atletas, edição de duplas e cabeças de chave CBT
           </p>
         </div>
 
@@ -251,13 +288,13 @@ export default function AthletesClient({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowAthleteModal(true)}
-            className="px-3.5 py-2 rounded-xl bg-[#14231A] hover:bg-[#1C3325] border border-[#233F2E] text-emerald-400 font-bold text-xs transition"
+            className="px-3.5 py-2 rounded-xl bg-[#08111B] hover:bg-[#13253C] border border-[#162D4A] text-[#00D2FF] font-bold text-xs transition"
           >
             + Novo Atleta
           </button>
           <button
             onClick={() => setShowPairModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs transition shadow-md shadow-emerald-500/20"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#00D2FF] to-[#0099FF] hover:from-[#33DDFF] hover:to-[#1AA3FF] text-[#060B12] font-black text-xs transition shadow-md shadow-cyan-500/20 active:scale-95"
           >
             <PlusCircle className="w-4 h-4 stroke-[2.5]" />
             <span>Inscrever Dupla</span>
@@ -267,25 +304,25 @@ export default function AthletesClient({
 
       {/* Messages */}
       {successMessage && (
-        <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs flex items-center justify-between">
+        <div className="p-3 rounded-xl bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-xs flex items-center justify-between animate-in fade-in">
           <span className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-[#00D2FF] shrink-0" />
             {successMessage}
           </span>
           <button onClick={() => setSuccessMessage(null)}>
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 text-slate-400 hover:text-white" />
           </button>
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex space-x-2 border-b border-[#182C1F] pb-2">
+      <div className="flex space-x-2 border-b border-[#162D4A] pb-2">
         <button
           onClick={() => setActiveTab("pairs")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
             activeTab === "pairs"
-              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-              : "text-zinc-400 hover:text-white"
+              ? "bg-cyan-500/20 text-[#00D2FF] border border-cyan-500/40"
+              : "text-slate-400 hover:text-white"
           }`}
         >
           Duplas por Categoria
@@ -294,8 +331,8 @@ export default function AthletesClient({
           onClick={() => setActiveTab("athletes")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
             activeTab === "athletes"
-              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-              : "text-zinc-400 hover:text-white"
+              ? "bg-cyan-500/20 text-[#00D2FF] border border-cyan-500/40"
+              : "text-slate-400 hover:text-white"
           }`}
         >
           Banco Global de Atletas ({athletesList.length})
@@ -304,8 +341,8 @@ export default function AthletesClient({
           onClick={() => setActiveTab("import")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
             activeTab === "import"
-              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-              : "text-zinc-400 hover:text-white"
+              ? "bg-cyan-500/20 text-[#00D2FF] border border-cyan-500/40"
+              : "text-slate-400 hover:text-white"
           }`}
         >
           Importação em Lote (CSV / Texto)
@@ -323,8 +360,8 @@ export default function AthletesClient({
                 onClick={() => setSelectedCatId(cat.id)}
                 className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
                   selectedCatId === cat.id
-                    ? "bg-[#183022] text-emerald-300 border border-emerald-500/60 shadow-md"
-                    : "bg-[#0F1C15] text-zinc-400 border border-[#192C20] hover:text-zinc-200"
+                    ? "bg-[#00D2FF] text-[#060B12] font-black shadow-md shadow-cyan-500/20"
+                    : "bg-[#0C1726] text-slate-400 border border-[#162D4A] hover:text-slate-200"
                 }`}
               >
                 {cat.name} ({cat.pairs.length}/{cat.maxPairs})
@@ -333,27 +370,27 @@ export default function AthletesClient({
           </div>
 
           {currentCategory && (
-            <div className="p-6 rounded-2xl bg-[#0F1C15] border border-[#1A2E22] space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#182C1F] pb-4">
+            <div className="p-6 rounded-2xl bg-[#0C1726] border border-[#162D4A] space-y-4 shadow-md">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#162D4A] pb-4">
                 <div>
                   <h3 className="text-base font-extrabold text-white">
                     Duplas Inscritas: {currentCategory.name}
                   </h3>
-                  <span className="text-xs text-zinc-400">
+                  <span className="text-xs text-slate-400">
                     Limite: {currentCategory.maxPairs} duplas • {currentCategory.pairs.filter((p: any) => p.status === 'CONFIRMED').length} Confirmadas • {currentCategory.pairs.filter((p: any) => p.status === 'WAITLIST').length} Lista de Espera
                   </span>
                 </div>
 
                 <button
                   onClick={() => setShowPairModal(true)}
-                  className="px-3.5 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition"
+                  className="px-3.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-[#00D2FF] border border-cyan-500/40 text-xs font-bold transition"
                 >
                   + Adicionar Dupla
                 </button>
               </div>
 
               {currentCategory.pairs.length === 0 ? (
-                <div className="text-center py-12 text-zinc-500 text-xs">
+                <div className="text-center py-12 text-slate-500 text-xs">
                   Nenhuma dupla inscrita nesta categoria ainda.
                 </div>
               ) : (
@@ -366,11 +403,11 @@ export default function AthletesClient({
                         className={`p-4 rounded-xl border flex items-center justify-between transition-all ${
                           isWaitlist
                             ? "bg-[#14120E] border-amber-500/30"
-                            : "bg-[#0A120E] border-[#182C1F]"
+                            : "bg-[#08111B] border-[#162D4A] hover:border-cyan-500/30"
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="w-7 h-7 rounded-lg bg-[#14231A] text-zinc-400 flex items-center justify-center font-mono text-xs font-bold">
+                          <span className="w-7 h-7 rounded-lg bg-[#0C1726] text-slate-400 flex items-center justify-center font-mono text-xs font-bold border border-[#162D4A]">
                             #{index + 1}
                           </span>
                           <div>
@@ -390,19 +427,38 @@ export default function AthletesClient({
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-zinc-500 mt-0.5">
+                            <div className="text-[11px] text-slate-400 mt-0.5">
                               {pair.athlete1.club || "Arena"} • {pair.athlete2.club || "Arena"}
                             </div>
                           </div>
                         </div>
 
-                        <button
-                          onClick={() => handleDeletePair(pair.id)}
-                          className="p-1.5 text-zinc-500 hover:text-red-400 transition"
-                          title="Remover dupla"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          {/* Botão Editar Dupla */}
+                          <button
+                            onClick={() =>
+                              setEditingPair({
+                                id: pair.id,
+                                athlete1Id: pair.athlete1Id,
+                                athlete2Id: pair.athlete2Id,
+                                seedRanking: pair.seedRanking || "",
+                                status: pair.status,
+                              })
+                            }
+                            className="p-1.5 text-slate-400 hover:text-[#00D2FF] hover:bg-cyan-500/10 rounded-lg transition"
+                            title="Editar Dupla"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            onClick={() => handleDeletePair(pair.id)}
+                            className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"
+                            title="Remover dupla"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
@@ -415,29 +471,29 @@ export default function AthletesClient({
 
       {/* TAB 2: BANCO GLOBAL DE ATLETAS */}
       {activeTab === "athletes" && (
-        <div className="p-6 rounded-2xl bg-[#0F1C15] border border-[#1A2E22] space-y-4">
+        <div className="p-6 rounded-2xl bg-[#0C1726] border border-[#162D4A] space-y-4 shadow-md">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="relative flex-1 max-w-md">
-              <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-3" />
+              <Search className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
               <input
                 type="text"
                 placeholder="Buscar atleta por nome ou clube..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#0A120E] border border-[#1A2E22] rounded-xl pl-9 pr-3.5 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl pl-9 pr-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
               />
             </div>
             <button
               onClick={() => setShowAthleteModal(true)}
-              className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs transition"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#00D2FF] to-[#0099FF] text-[#060B12] font-black text-xs transition"
             >
               + Cadastrar Novo Atleta
             </button>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-zinc-300">
-              <thead className="bg-[#0A120E] text-zinc-400 uppercase font-bold border-b border-[#182C1F]">
+            <table className="w-full text-left text-xs text-slate-300">
+              <thead className="bg-[#08111B] text-slate-400 uppercase font-bold border-b border-[#162D4A]">
                 <tr>
                   <th className="py-3 px-4">Nome Completo</th>
                   <th className="py-3 px-4">Telefone / WhatsApp</th>
@@ -447,26 +503,38 @@ export default function AthletesClient({
                   <th className="py-3 px-4 text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#15241B]">
+              <tbody className="divide-y divide-[#13253C]">
                 {filteredAthletes.map((a) => (
-                  <tr key={a.id} className="hover:bg-[#122217]/50">
-                    <td className="py-3 px-4 font-bold text-white">{a.fullName}</td>
-                    <td className="py-3 px-4 font-mono text-zinc-400">{a.phone}</td>
-                    <td className="py-3 px-4 text-zinc-400">{a.email || "-"}</td>
-                    <td className="py-3 px-4 text-zinc-300">{a.club || "-"}</td>
+                  <tr key={a.id} className="hover:bg-[#0E1F35]/50 transition">
+                    <td className="py-3 px-4 font-extrabold text-white">
+                      {a.fullName}
+                    </td>
+                    <td className="py-3 px-4 font-mono text-slate-400">
+                      {a.phone || "—"}
+                    </td>
+                    <td className="py-3 px-4 text-slate-400">
+                      {a.email || "—"}
+                    </td>
+                    <td className="py-3 px-4 text-slate-300">
+                      {a.club || "Arena Viva"}
+                    </td>
                     <td className="py-3 px-4">
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
-                        {a.gender === "MALE" ? "Masc" : a.gender === "FEMALE" ? "Fem" : "Outro"}
+                      <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-[#08111B] border border-[#162D4A] text-slate-300">
+                        {a.gender === "MALE"
+                          ? "Masc"
+                          : a.gender === "FEMALE"
+                          ? "Fem"
+                          : "Outro"}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-right">
+                      {/* Botão de Editar Atleta */}
                       <button
                         onClick={() => setEditingAthlete({ ...a })}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#14231A] hover:bg-[#1E3628] border border-[#233C2D] text-emerald-300 text-xs font-semibold transition"
-                        title="Editar Informações do Atleta"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-[#00D2FF] hover:bg-cyan-500/10 transition"
+                        title="Editar Atleta"
                       >
-                        <Pencil className="w-3 h-3 text-emerald-400" />
-                        <span>Editar</span>
+                        <Pencil className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>
@@ -479,15 +547,15 @@ export default function AthletesClient({
 
       {/* TAB 3: IMPORTAÇÃO EM LOTE */}
       {activeTab === "import" && (
-        <div className="p-6 rounded-2xl bg-[#0F1C15] border border-[#1A2E22] space-y-4">
+        <div className="p-6 rounded-2xl bg-[#0C1726] border border-[#162D4A] space-y-4 shadow-md">
           <div>
             <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-              <FileSpreadsheet className="w-5 h-5 text-emerald-400" />
+              <FileSpreadsheet className="w-5 h-5 text-[#00D2FF]" />
               Importação em Lote via Colagem de Texto ou CSV (RF-007)
             </h3>
-            <p className="text-xs text-zinc-400 mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               Cole linhas no formato:{" "}
-              <code className="text-emerald-300 bg-black/40 px-1.5 py-0.5 rounded">
+              <code className="text-cyan-300 bg-black/40 px-1.5 py-0.5 rounded border border-[#162D4A]">
                 Atleta 1, Telefone 1, Atleta 2, Telefone 2, Nome da Categoria, Cabeça de Chave
               </code>
             </p>
@@ -497,31 +565,31 @@ export default function AthletesClient({
             rows={8}
             value={batchText}
             onChange={(e) => setBatchText(e.target.value)}
-            className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl p-3 text-xs font-mono text-zinc-200 focus:outline-none focus:border-emerald-500"
+            className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500"
           />
 
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-slate-500">
               O sistema criará atletas inexistentes automaticamente no banco global.
             </span>
             <button
               onClick={handleProcessBatch}
               disabled={loading}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-lime-400 text-black font-extrabold text-xs transition hover:opacity-90 disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#00D2FF] to-[#0099FF] text-[#060B12] font-black text-xs transition hover:brightness-110 disabled:opacity-50"
             >
               {loading ? "Processando..." : "Importar Duplas em Lote"}
             </button>
           </div>
 
           {batchResult && (
-            <div className="p-4 rounded-xl bg-[#0A120E] border border-[#182C1F] text-xs space-y-2">
-              <div className="text-emerald-400 font-bold">
+            <div className="p-4 rounded-xl bg-[#08111B] border border-[#162D4A] text-xs space-y-2">
+              <div className="text-[#00D2FF] font-bold">
                 ✓ {batchResult.createdCount} duplas importadas com sucesso!
               </div>
               {batchResult.errors?.length > 0 && (
                 <div className="text-amber-400 space-y-1">
                   <span className="font-bold">Avisos / Linhas ignoradas:</span>
-                  <ul className="list-disc list-inside text-zinc-400 text-[11px]">
+                  <ul className="list-disc list-inside text-slate-400 text-[11px]">
                     {batchResult.errors.map((err: string, i: number) => (
                       <li key={i}>{err}</li>
                     ))}
@@ -536,10 +604,10 @@ export default function AthletesClient({
       {/* Modal: Inscrever Dupla */}
       {showPairModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#101C16] border border-[#1E3628] rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-left">
+          <div className="bg-[#0C1726] border border-[#162D4A] rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-left">
             <button
               onClick={() => setShowPairModal(false)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white p-1"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1"
             >
               <X className="w-5 h-5" />
             </button>
@@ -547,9 +615,9 @@ export default function AthletesClient({
             <h3 className="text-base font-extrabold text-white mb-1">
               Inscrever Dupla na Categoria
             </h3>
-            <p className="text-xs text-zinc-400 mb-4">
+            <p className="text-xs text-slate-400 mb-4">
               Selecione 2 atletas do banco global para a categoria{" "}
-              <strong className="text-emerald-400">{currentCategory?.name}</strong>
+              <strong className="text-[#00D2FF]">{currentCategory?.name}</strong>
             </p>
 
             {errorMessage && (
@@ -561,7 +629,7 @@ export default function AthletesClient({
 
             <form onSubmit={handleAddPair} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Atleta 1 *
                 </label>
                 <select
@@ -570,7 +638,7 @@ export default function AthletesClient({
                   onChange={(e) =>
                     setPairForm({ ...pairForm, athlete1Id: e.target.value })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="">Selecione o Atleta 1...</option>
                   {athletesList.map((a) => (
@@ -582,7 +650,7 @@ export default function AthletesClient({
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Atleta 2 *
                 </label>
                 <select
@@ -591,7 +659,7 @@ export default function AthletesClient({
                   onChange={(e) =>
                     setPairForm({ ...pairForm, athlete2Id: e.target.value })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="">Selecione o Atleta 2...</option>
                   {athletesList.map((a) => (
@@ -603,8 +671,8 @@ export default function AthletesClient({
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
-                  Cabeça de Chave (Seed Ranking) - Opcional
+                <label className="block font-semibold text-slate-300 mb-1">
+                  Cabeça de Chave (Seed Ranking CBT) - Opcional
                 </label>
                 <input
                   type="number"
@@ -615,24 +683,147 @@ export default function AthletesClient({
                   onChange={(e) =>
                     setPairForm({ ...pairForm, seedRanking: e.target.value })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#1C3225]">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#162D4A]">
                 <button
                   type="button"
                   onClick={() => setShowPairModal(false)}
-                  className="px-4 py-2 rounded-xl text-zinc-400 hover:text-white font-semibold"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#00D2FF] to-[#0099FF] text-[#060B12] font-black disabled:opacity-50"
                 >
                   {loading ? "Confirmando..." : "Confirmar Inscrição"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Editar Dupla */}
+      {editingPair && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#0C1726] border border-[#162D4A] rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-left">
+            <button
+              onClick={() => setEditingPair(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="text-base font-extrabold text-white mb-1 flex items-center gap-2">
+              <Pencil className="w-4 h-4 text-[#00D2FF]" />
+              Editar Inscrição da Dupla
+            </h3>
+            <p className="text-xs text-slate-400 mb-4">
+              Atualize os atletas componentes, ranking ou status de inscrição
+            </p>
+
+            {errorMessage && (
+              <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSaveEditedPair} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-semibold text-slate-300 mb-1">
+                  Atleta 1 *
+                </label>
+                <select
+                  required
+                  value={editingPair.athlete1Id}
+                  onChange={(e) =>
+                    setEditingPair({ ...editingPair, athlete1Id: e.target.value })
+                  }
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                >
+                  {athletesList.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.fullName} ({a.club || "Sem clube"})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-300 mb-1">
+                  Atleta 2 *
+                </label>
+                <select
+                  required
+                  value={editingPair.athlete2Id}
+                  onChange={(e) =>
+                    setEditingPair({ ...editingPair, athlete2Id: e.target.value })
+                  }
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                >
+                  {athletesList.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.fullName} ({a.club || "Sem clube"})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-slate-300 mb-1">
+                    Cabeça de Chave (Seed CBT)
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={16}
+                    placeholder="Ex.: 1, 2, 3..."
+                    value={editingPair.seedRanking}
+                    onChange={(e) =>
+                      setEditingPair({ ...editingPair, seedRanking: e.target.value })
+                    }
+                    className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-slate-300 mb-1">
+                    Status da Inscrição
+                  </label>
+                  <select
+                    value={editingPair.status}
+                    onChange={(e) =>
+                      setEditingPair({ ...editingPair, status: e.target.value })
+                    }
+                    className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                  >
+                    <option value="CONFIRMED">Confirmada</option>
+                    <option value="WAITLIST">Lista de Espera</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#162D4A]">
+                <button
+                  type="button"
+                  onClick={() => setEditingPair(null)}
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#00D2FF] to-[#0099FF] text-[#060B12] font-black disabled:opacity-50"
+                >
+                  {loading ? "Salvando..." : "Salvar Alterações"}
                 </button>
               </div>
             </form>
@@ -643,10 +834,10 @@ export default function AthletesClient({
       {/* Modal: Novo Atleta */}
       {showAthleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#101C16] border border-[#1E3628] rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-left">
+          <div className="bg-[#0C1726] border border-[#162D4A] rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-left">
             <button
               onClick={() => setShowAthleteModal(false)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white p-1"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1"
             >
               <X className="w-5 h-5" />
             </button>
@@ -654,13 +845,13 @@ export default function AthletesClient({
             <h3 className="text-base font-extrabold text-white mb-1">
               Cadastrar Novo Atleta
             </h3>
-            <p className="text-xs text-zinc-400 mb-4">
+            <p className="text-xs text-slate-400 mb-4">
               Adiciona o atleta ao banco global reutilizável
             </p>
 
             <form onSubmit={handleAddAthlete} className="space-y-3 text-xs">
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Nome Completo *
                 </label>
                 <input
@@ -670,12 +861,12 @@ export default function AthletesClient({
                   onChange={(e) =>
                     setAthleteForm({ ...athleteForm, fullName: e.target.value })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Telefone / WhatsApp *
                 </label>
                 <input
@@ -686,12 +877,12 @@ export default function AthletesClient({
                   onChange={(e) =>
                     setAthleteForm({ ...athleteForm, phone: e.target.value })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   E-mail
                 </label>
                 <input
@@ -700,12 +891,12 @@ export default function AthletesClient({
                   onChange={(e) =>
                     setAthleteForm({ ...athleteForm, email: e.target.value })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Clube / Academia / Arena
                 </label>
                 <input
@@ -714,12 +905,12 @@ export default function AthletesClient({
                   onChange={(e) =>
                     setAthleteForm({ ...athleteForm, club: e.target.value })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Gênero
                 </label>
                 <select
@@ -727,7 +918,7 @@ export default function AthletesClient({
                   onChange={(e) =>
                     setAthleteForm({ ...athleteForm, gender: e.target.value })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="MALE">Masculino</option>
                   <option value="FEMALE">Feminino</option>
@@ -735,18 +926,18 @@ export default function AthletesClient({
                 </select>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#1C3225]">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#162D4A]">
                 <button
                   type="button"
                   onClick={() => setShowAthleteModal(false)}
-                  className="px-4 py-2 rounded-xl text-zinc-400 hover:text-white font-semibold"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#00D2FF] to-[#0099FF] text-[#060B12] font-black"
                 >
                   {loading ? "Salvando..." : "Salvar Atleta"}
                 </button>
@@ -759,25 +950,25 @@ export default function AthletesClient({
       {/* Modal: Editar Atleta */}
       {editingAthlete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#101C16] border border-[#1E3628] rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-left">
+          <div className="bg-[#0C1726] border border-[#162D4A] rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-left">
             <button
               onClick={() => setEditingAthlete(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white p-1"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1"
             >
               <X className="w-5 h-5" />
             </button>
 
             <h3 className="text-base font-extrabold text-white mb-1 flex items-center gap-2">
-              <Pencil className="w-4 h-4 text-emerald-400" />
+              <Pencil className="w-4 h-4 text-[#00D2FF]" />
               Editar Informações do Atleta
             </h3>
-            <p className="text-xs text-zinc-400 mb-4">
+            <p className="text-xs text-slate-400 mb-4">
               Atualize os dados cadastrais do atleta no banco global
             </p>
 
             <form onSubmit={handleSaveEditedAthlete} className="space-y-3 text-xs">
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Nome Completo *
                 </label>
                 <input
@@ -790,12 +981,12 @@ export default function AthletesClient({
                       fullName: e.target.value,
                     })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Telefone / WhatsApp *
                 </label>
                 <input
@@ -808,12 +999,12 @@ export default function AthletesClient({
                       phone: e.target.value,
                     })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   E-mail
                 </label>
                 <input
@@ -825,12 +1016,12 @@ export default function AthletesClient({
                       email: e.target.value,
                     })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Clube / Academia / Arena
                 </label>
                 <input
@@ -842,12 +1033,12 @@ export default function AthletesClient({
                       club: e.target.value,
                     })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Gênero
                 </label>
                 <select
@@ -858,7 +1049,7 @@ export default function AthletesClient({
                       gender: e.target.value,
                     })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="MALE">Masculino</option>
                   <option value="FEMALE">Feminino</option>
@@ -866,18 +1057,18 @@ export default function AthletesClient({
                 </select>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#1C3225]">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#162D4A]">
                 <button
                   type="button"
                   onClick={() => setEditingAthlete(null)}
-                  className="px-4 py-2 rounded-xl text-zinc-400 hover:text-white font-semibold"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#00D2FF] to-[#0099FF] text-[#060B12] font-black"
                 >
                   {loading ? "Salvando..." : "Salvar Alterações"}
                 </button>

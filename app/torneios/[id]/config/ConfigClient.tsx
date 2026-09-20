@@ -162,17 +162,17 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
       {/* Header */}
       <div>
         <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-          <Settings className="w-6 h-6 text-emerald-400" />
+          <Settings className="w-6 h-6 text-[#00D2FF]" />
           Configurações Operacionais & Quadras
         </h2>
-        <p className="text-xs sm:text-sm text-zinc-400">
+        <p className="text-xs sm:text-sm text-slate-400">
           Gerencie os parâmetros temporais, tempo de descanso entre partidas e quadras da arena
         </p>
       </div>
 
       {successMsg && (
-        <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="p-3.5 rounded-xl bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-xs flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-[#00D2FF] shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
@@ -180,21 +180,21 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
       {/* Grid: 2 Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* 1. QUADRAS DA ARENA (RF-019) */}
-        <div className="p-6 rounded-2xl bg-[#0F1C15] border border-[#1A2E22] space-y-5">
-          <div className="flex items-center justify-between border-b border-[#182C1F] pb-4">
+        <div className="p-6 rounded-2xl bg-[#0C1726] border border-[#162D4A] space-y-5">
+          <div className="flex items-center justify-between border-b border-[#162D4A] pb-4">
             <div>
               <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-                <Flame className="w-5 h-5 text-emerald-400" />
+                <Flame className="w-5 h-5 text-[#00D2FF]" />
                 Quadras da Arena ({tournament.courts.length})
               </h3>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-slate-400">
                 Pausar para manutenção ou alterar ordem de exibição no telão
               </p>
             </div>
 
             <button
               onClick={() => setShowAddCourt(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00D2FF] hover:bg-cyan-400 text-[#060B12] font-extrabold text-xs transition"
             >
               <PlusCircle className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Nova Quadra</span>
@@ -205,7 +205,7 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
           {showAddCourt && (
             <form
               onSubmit={handleAddCourt}
-              className="p-4 rounded-xl bg-[#0A120E] border border-[#1E3628] space-y-3 text-xs"
+              className="p-4 rounded-xl bg-[#08111B] border border-[#162D4A] space-y-3 text-xs"
             >
               <div className="font-bold text-white">Cadastrar Nova Quadra</div>
               <div className="grid grid-cols-2 gap-2">
@@ -215,12 +215,12 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                   placeholder="Nome (Ex.: Quadra 5)"
                   value={newCourtName}
                   onChange={(e) => setNewCourtName(e.target.value)}
-                  className="bg-[#121E17] border border-[#1E3628] rounded-lg px-3 py-2 text-white"
+                  className="bg-[#101F33] border border-[#162D4A] rounded-lg px-3 py-2 text-white"
                 />
                 <select
                   value={newCourtType}
                   onChange={(e) => setNewCourtType(e.target.value)}
-                  className="bg-[#121E17] border border-[#1E3628] rounded-lg px-3 py-2 text-white"
+                  className="bg-[#101F33] border border-[#162D4A] rounded-lg px-3 py-2 text-white"
                 >
                   <option value="SAND">Areia Externa</option>
                   <option value="INDOOR_SAND">Areia Coberta</option>
@@ -231,14 +231,14 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                 <button
                   type="button"
                   onClick={() => setShowAddCourt(false)}
-                  className="px-3 py-1.5 text-zinc-400 hover:text-white"
+                  className="px-3 py-1.5 text-slate-400 hover:text-white"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={addingCourt}
-                  className="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold"
+                  className="px-4 py-1.5 rounded-lg bg-[#00D2FF] hover:bg-cyan-400 text-[#060B12] font-extrabold"
                 >
                   {addingCourt ? "Adicionando..." : "Salvar Quadra"}
                 </button>
@@ -256,11 +256,11 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                   className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
                     isMaintenance
                       ? "bg-[#14100D] border-amber-500/30"
-                      : "bg-[#0A120E] border-[#182C1F]"
+                      : "bg-[#08111B] border-[#162D4A]"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="w-7 h-7 rounded-lg bg-[#14231A] text-zinc-400 flex items-center justify-center font-mono text-xs font-bold">
+                    <span className="w-7 h-7 rounded-lg bg-[#101F33] text-slate-400 flex items-center justify-center font-mono text-xs font-bold">
                       #{court.displayOrder}
                     </span>
                     <div>
@@ -273,14 +273,14 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                             isMaintenance
                               ? "bg-amber-500/20 text-amber-400"
                               : court.status === "OCCUPIED"
-                              ? "bg-emerald-500/20 text-emerald-400"
-                              : "bg-zinc-800 text-zinc-400"
+                              ? "bg-cyan-500/20 text-[#00D2FF]"
+                              : "bg-slate-800 text-slate-400"
                           }`}
                         >
                           {CourtStatusLabels[court.status] || court.status}
                         </span>
                       </div>
-                      <span className="text-[11px] text-zinc-500">
+                      <span className="text-[11px] text-slate-500">
                         {CourtTypeLabels[court.type] || court.type}
                       </span>
                     </div>
@@ -289,10 +289,10 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => setEditingCourt({ ...court })}
-                      className="p-1.5 rounded-lg bg-[#14231A] hover:bg-[#1E3628] border border-[#233C2D] text-emerald-300 text-xs font-semibold transition flex items-center gap-1"
+                      className="p-1.5 rounded-lg bg-[#101F33] hover:bg-[#162D4A] border border-[#162D4A] text-cyan-300 text-xs font-semibold transition flex items-center gap-1"
                       title="Editar Informações da Quadra"
                     >
-                      <Pencil className="w-3.5 h-3.5 text-emerald-400" />
+                      <Pencil className="w-3.5 h-3.5 text-[#00D2FF]" />
                       <span className="hidden sm:inline">Editar</span>
                     </button>
 
@@ -300,7 +300,7 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                       onClick={() => handleToggleCourtStatus(court.id, court.status)}
                       className={`p-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 ${
                         isMaintenance
-                          ? "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
+                          ? "bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30"
                           : "bg-amber-500/15 text-amber-300 hover:bg-amber-500/25"
                       }`}
                       title={isMaintenance ? "Liberar Quadra" : "Pausar para Manutenção"}
@@ -317,7 +317,7 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
 
                     <button
                       onClick={() => handleDeleteCourt(court.id, court.name)}
-                      className="p-1.5 text-zinc-500 hover:text-red-400 transition"
+                      className="p-1.5 text-slate-500 hover:text-red-400 transition"
                       title="Excluir Quadra"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -330,21 +330,21 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
         </div>
 
         {/* 2. PARÂMETROS TEMPORAIS (RF-020) */}
-        <div className="p-6 rounded-2xl bg-[#0F1C15] border border-[#1A2E22] space-y-5 flex flex-col justify-between">
+        <div className="p-6 rounded-2xl bg-[#0C1726] border border-[#162D4A] space-y-5 flex flex-col justify-between">
           <div>
-            <div className="border-b border-[#182C1F] pb-4 mb-4">
+            <div className="border-b border-[#162D4A] pb-4 mb-4">
               <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-                <Clock className="w-5 h-5 text-emerald-400" />
+                <Clock className="w-5 h-5 text-[#00D2FF]" />
                 Parâmetros Temporais & Regras de Descanso (RF-020)
               </h3>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-slate-400">
                 Alocação automática e validação de conflitos de atletas (RN-002)
               </p>
             </div>
 
             <form onSubmit={handleSaveSettings} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Duração Média Estimada por Partida (minutos)
                 </label>
                 <input
@@ -358,15 +358,15 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                       avgMatchDurationMinutes: parseInt(e.target.value) || 45,
                     })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2.5 text-white font-mono"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2.5 text-white font-mono"
                 />
-                <span className="text-[10px] text-zinc-500 mt-1 block">
+                <span className="text-[10px] text-slate-500 mt-1 block">
                   Usado no cálculo de grade e previsão de horários das fases seguintes.
                 </span>
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Tempo Mínimo de Descanso entre Jogos Consecutivos (minutos)
                 </label>
                 <input
@@ -380,16 +380,16 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                       restBetweenMatchesMinutes: parseInt(e.target.value) || 30,
                     })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2.5 text-white font-mono text-emerald-400 font-bold"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2.5 text-white font-mono text-[#00D2FF] font-bold"
                 />
-                <span className="text-[10px] text-zinc-500 mt-1 block">
+                <span className="text-[10px] text-slate-500 mt-1 block">
                   Regra RN-002: Alertas visuais e bloqueio caso um atleta seja escalado com descanso inferior.
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-zinc-300 mb-1">
+                  <label className="block font-semibold text-slate-300 mb-1">
                     Aquecimento (min)
                   </label>
                   <input
@@ -403,12 +403,12 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                         warmupDurationMinutes: parseInt(e.target.value) || 5,
                       })
                     }
-                    className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2.5 text-white font-mono"
+                    className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2.5 text-white font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-zinc-300 mb-1">
+                  <label className="block font-semibold text-slate-300 mb-1">
                     Transição de Quadra (min)
                   </label>
                   <input
@@ -422,16 +422,16 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                         intervalBetweenMatchesMinutes: parseInt(e.target.value) || 5,
                       })
                     }
-                    className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2.5 text-white font-mono"
+                    className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2.5 text-white font-mono"
                   />
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#182C1F] flex justify-end">
+              <div className="pt-4 border-t border-[#162D4A] flex justify-end">
                 <button
                   type="submit"
                   disabled={savingSettings}
-                  className="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs transition shadow-md shadow-emerald-500/20 disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-[#00D2FF] hover:bg-cyan-400 text-[#060B12] font-extrabold text-xs transition shadow-md shadow-cyan-500/20 disabled:opacity-50"
                 >
                   {savingSettings ? "Salvando..." : "Salvar Parâmetros"}
                 </button>
@@ -439,7 +439,7 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
             </form>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#0A120E] border border-[#182C1F] text-[11px] text-zinc-400 mt-4">
+          <div className="p-4 rounded-xl bg-[#08111B] border border-[#162D4A] text-[11px] text-slate-400 mt-4">
             ⚡ <strong>Resiliência Operacional (RNF-003):</strong> Todas as alterações de tempo e estado das quadras possuem persistência atômica no banco de dados SQLite.
           </div>
         </div>
@@ -448,25 +448,25 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
       {/* Modal: Editar Quadra */}
       {editingCourt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#101C16] border border-[#1E3628] rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-left">
+          <div className="bg-[#0C1726] border border-[#162D4A] rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-left">
             <button
               onClick={() => setEditingCourt(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white p-1"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1"
             >
               <X className="w-5 h-5" />
             </button>
 
             <h3 className="text-base font-extrabold text-white mb-1 flex items-center gap-2">
-              <Pencil className="w-4 h-4 text-emerald-400" />
+              <Pencil className="w-4 h-4 text-[#00D2FF]" />
               Editar Informações da Quadra
             </h3>
-            <p className="text-xs text-zinc-400 mb-4">
+            <p className="text-xs text-slate-400 mb-4">
               Atualize a identificação, tipo de piso, status e ordem no telão
             </p>
 
             <form onSubmit={handleSaveEditedCourt} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Nome da Quadra *
                 </label>
                 <input
@@ -476,13 +476,13 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                   onChange={(e) =>
                     setEditingCourt({ ...editingCourt, name: e.target.value })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-zinc-300 mb-1">
+                  <label className="block font-semibold text-slate-300 mb-1">
                     Tipo de Piso
                   </label>
                   <select
@@ -490,7 +490,7 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                     onChange={(e) =>
                       setEditingCourt({ ...editingCourt, type: e.target.value })
                     }
-                    className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                    className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white"
                   >
                     <option value="SAND">Areia Externa</option>
                     <option value="INDOOR_SAND">Areia Coberta</option>
@@ -499,7 +499,7 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-zinc-300 mb-1">
+                  <label className="block font-semibold text-slate-300 mb-1">
                     Ordem no Telão
                   </label>
                   <input
@@ -513,13 +513,13 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                         displayOrder: parseInt(e.target.value) || 1,
                       })
                     }
-                    className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white font-mono"
+                    className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1">
                   Status Operacional
                 </label>
                 <select
@@ -527,7 +527,7 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                   onChange={(e) =>
                     setEditingCourt({ ...editingCourt, status: e.target.value })
                   }
-                  className="w-full bg-[#0A120E] border border-[#1E3628] rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white"
                 >
                   <option value="AVAILABLE">Disponível (Pronta para jogo)</option>
                   <option value="OCCUPIED">Em Jogo (Ocupada)</option>
@@ -536,18 +536,18 @@ export default function ConfigClient({ tournament }: { tournament: any }) {
                 </select>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#1C3225]">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#162D4A]">
                 <button
                   type="button"
                   onClick={() => setEditingCourt(null)}
-                  className="px-4 py-2 rounded-xl text-zinc-400 hover:text-white font-semibold"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white font-semibold"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={savingCourtEdit}
-                  className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold"
+                  className="px-5 py-2 rounded-xl bg-[#00D2FF] hover:bg-cyan-400 text-[#060B12] font-extrabold"
                 >
                   {savingCourtEdit ? "Salvando..." : "Salvar Alterações"}
                 </button>
