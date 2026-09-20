@@ -14,6 +14,7 @@ import {
   Flame,
   Volume2,
 } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface MatchPlayer {
   id: string;
@@ -193,6 +194,8 @@ export default function TelaoBigScreenPage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
+
             <Link
               href={`/telao/${tournamentId}/admin`}
               target="_blank"

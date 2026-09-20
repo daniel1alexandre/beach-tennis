@@ -234,9 +234,9 @@ export default function CategoryManagerClient({
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[11px]">Grupos Sorteados:</span>
+                    <span className="text-slate-400 block text-[11px]">Classificação por Grupo:</span>
                     <span className="font-bold text-[#00D2FF]">
-                      {cat.groupCount} grupos • avança top {cat.advancePerGroup}
+                      Avança top {cat.advancePerGroup} da chave
                     </span>
                   </div>
                   <div>
@@ -374,45 +374,33 @@ export default function CategoryManagerClient({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-slate-300 mb-1">
-                    Grupos Previstos (Sorteio Automático CBT)
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={16}
-                    value={formData.groupCount}
-                    onChange={(e) =>
-                      setFormData({ ...formData, groupCount: parseInt(e.target.value) || 2 })
-                    }
-                    className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-slate-300 mb-1">
-                    Classificados por Grupo (CBT)
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={4}
-                    value={formData.advancePerGroup}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        advancePerGroup: parseInt(e.target.value) || 2,
-                      })
-                    }
-                    className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
+              <div>
+                <label className="block font-semibold text-slate-300 mb-1">
+                  Classificados por Grupo para o Mata-Mata (CBT)
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={4}
+                  value={formData.advancePerGroup}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      advancePerGroup: parseInt(e.target.value) || 2,
+                    })
+                  }
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                />
               </div>
 
-              <div className="p-3 rounded-xl bg-[#08111B] border border-cyan-500/30 text-[11px] text-slate-300">
-                ⚡ <strong>Regra Oficial CBT:</strong> No momento do sorteio da chave, a quantidade de grupos será ajustada automaticamente conforme a quantidade exata de duplas confirmadas (3 a 4 duplas por grupo).
+              <div className="p-3 rounded-xl bg-[#08111B] border border-cyan-500/30 text-[11px] text-slate-300 space-y-1">
+                <div className="font-bold text-[#00D2FF] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Sorteio de Grupos Automático (Regra Oficial CBT):
+                </div>
+                <p>
+                  A quantidade de grupos não precisa ser configurada manualmente. Ela é gerada automaticamente pelo algoritmo no sorteio da chave com base nas duplas confirmadas (2 a 5 duplas = 1 grupo único; 6 a 8 = 2 grupos; 9 a 11 = 3 grupos; 12 a 15 = 4 grupos; 16+ = 5+ grupos).
+                </p>
               </div>
 
               <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#162D4A]">
@@ -552,44 +540,33 @@ export default function CategoryManagerClient({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-slate-300 mb-1">
-                    Quantidade de Grupos
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={16}
-                    value={editingCategory.groupCount}
-                    onChange={(e) =>
-                      setEditingCategory({
-                        ...editingCategory,
-                        groupCount: parseInt(e.target.value) || 2,
-                      })
-                    }
-                    className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
+              <div>
+                <label className="block font-semibold text-slate-300 mb-1">
+                  Classificados por Grupo para o Mata-Mata (CBT)
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={4}
+                  value={editingCategory.advancePerGroup}
+                  onChange={(e) =>
+                    setEditingCategory({
+                      ...editingCategory,
+                      advancePerGroup: parseInt(e.target.value) || 2,
+                    })
+                  }
+                  className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                />
+              </div>
 
-                <div>
-                  <label className="block font-semibold text-slate-300 mb-1">
-                    Classificados por Grupo (CBT)
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={4}
-                    value={editingCategory.advancePerGroup}
-                    onChange={(e) =>
-                      setEditingCategory({
-                        ...editingCategory,
-                        advancePerGroup: parseInt(e.target.value) || 2,
-                      })
-                    }
-                    className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
-                  />
+              <div className="p-3 rounded-xl bg-[#08111B] border border-cyan-500/30 text-[11px] text-slate-300 space-y-1">
+                <div className="font-bold text-[#00D2FF] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Sorteio de Grupos Dinâmico (CBT):
                 </div>
+                <p>
+                  A quantidade de grupos é calculada de forma dinâmica conforme o total de duplas que se inscreverem nesta categoria, dispensando ajuste manual.
+                </p>
               </div>
 
               <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#162D4A]">

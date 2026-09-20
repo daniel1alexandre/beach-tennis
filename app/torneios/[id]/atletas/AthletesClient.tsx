@@ -14,6 +14,8 @@ import {
   FileSpreadsheet,
   Award,
   Pencil,
+  Sparkles,
+  Filter,
 } from "lucide-react";
 import { getCategoryTheme } from "@/lib/category-colors";
 
@@ -265,11 +267,28 @@ export default function AthletesClient({
     }
   };
 
-  const filteredAthletes = athletesList.filter(
-    (a) =>
+  // Gender filters (Default: "ALL", ensuring all registered athletes are available)
+  const [modalAthleteGenderFilter, setModalAthleteGenderFilter] = useState<"ALL" | "MALE" | "FEMALE">("ALL");
+  const [athleteTabGenderFilter, setAthleteTabGenderFilter] = useState<"ALL" | "MALE" | "FEMALE">("ALL");
+
+  const selectableModalAthletes = athletesList.filter((a) => {
+    if (modalAthleteGenderFilter === "MALE") return a.gender === "MALE";
+    if (modalAthleteGenderFilter === "FEMALE") return a.gender === "FEMALE";
+    return true;
+  });
+
+  const totalAthletesCount = athletesList.length;
+  const maleAthletesCount = athletesList.filter((a) => a.gender === "MALE").length;
+  const femaleAthletesCount = athletesList.filter((a) => a.gender === "FEMALE").length;
+
+  const filteredAthletes = athletesList.filter((a) => {
+    const matchesSearch =
       a.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (a.club && a.club.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+      (a.club && a.club.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesGender =
+      athleteTabGenderFilter === "ALL" || a.gender === athleteTabGenderFilter;
+    return matchesSearch && matchesGender;
+  });
 
   return (
     <div className="space-y-6">
@@ -504,7 +523,7 @@ export default function AthletesClient({
       {/* TAB 2: BANCO GLOBAL DE ATLETAS */}
       {activeTab === "athletes" && (
         <div className="p-6 rounded-2xl bg-[#0C1726] border border-[#162D4A] space-y-4 shadow-md">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="relative flex-1 max-w-md">
               <Search className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
               <input
@@ -515,6 +534,47 @@ export default function AthletesClient({
                 className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl pl-9 pr-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
               />
             </div>
+
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#08111B] border border-[#162D4A] flex-wrap">
+              <span className="text-[11px] text-slate-400 font-bold px-2 flex items-center gap-1">
+                <Filter className="w-3 h-3 text-[#00D2FF]" />
+                Gênero:
+              </span>
+              <button
+                type="button"
+                onClick={() => setAthleteTabGenderFilter("ALL")}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                  athleteTabGenderFilter === "ALL"
+                    ? "bg-[#00D2FF] text-[#060B12]"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Todos ({totalAthletesCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setAthleteTabGenderFilter("MALE")}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                  athleteTabGenderFilter === "MALE"
+                    ? "bg-[#00D2FF] text-[#060B12]"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Masculino ({maleAthletesCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setAthleteTabGenderFilter("FEMALE")}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                  athleteTabGenderFilter === "FEMALE"
+                    ? "bg-[#00D2FF] text-[#060B12]"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Feminino ({femaleAthletesCount})
+              </button>
+            </div>
+
             <button
               onClick={() => setShowAthleteModal(true)}
               className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#00D2FF] to-[#0099FF] text-[#060B12] font-black text-xs transition"
@@ -652,12 +712,60 @@ export default function AthletesClient({
               <strong className="text-[#00D2FF]">{currentCategory?.name}</strong>
             </p>
 
+            <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-[11px] text-cyan-200 flex items-start gap-2 mb-4">
+              <Sparkles className="w-4 h-4 text-[#00D2FF] shrink-0 mt-0.5" />
+              <span>
+                <strong>Inscrição Sem Restrição de Gênero:</strong> Todos os atletas cadastrados estão liberados para seleção em qualquer categoria (Masculina, Feminina ou Mista).
+              </span>
+            </div>
+
             {errorMessage && (
               <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{errorMessage}</span>
               </div>
             )}
+
+            {/* Filtro Rápido de Atletas por Gênero */}
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#08111B] border border-[#162D4A] mb-3 w-fit">
+              <span className="text-[10px] text-slate-400 font-bold px-2 flex items-center gap-1">
+                <Filter className="w-3 h-3 text-[#00D2FF]" />
+                Filtrar Atletas:
+              </span>
+              <button
+                type="button"
+                onClick={() => setModalAthleteGenderFilter("ALL")}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+                  modalAthleteGenderFilter === "ALL"
+                    ? "bg-[#00D2FF] text-[#060B12]"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Todos ({totalAthletesCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalAthleteGenderFilter("MALE")}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+                  modalAthleteGenderFilter === "MALE"
+                    ? "bg-[#00D2FF] text-[#060B12]"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Masculino ({maleAthletesCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalAthleteGenderFilter("FEMALE")}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+                  modalAthleteGenderFilter === "FEMALE"
+                    ? "bg-[#00D2FF] text-[#060B12]"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Feminino ({femaleAthletesCount})
+              </button>
+            </div>
 
             <form onSubmit={handleAddPair} className="space-y-4 text-xs">
               <div>
@@ -673,9 +781,9 @@ export default function AthletesClient({
                   className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="">Selecione o Atleta 1...</option>
-                  {athletesList.map((a) => (
+                  {selectableModalAthletes.map((a) => (
                     <option key={a.id} value={a.id}>
-                      {a.fullName} ({a.club || "Sem clube"})
+                      {a.fullName} • [{a.gender === "MALE" ? "Masc" : a.gender === "FEMALE" ? "Fem" : "Outro"}] ({a.club || "Sem clube"})
                     </option>
                   ))}
                 </select>
@@ -694,9 +802,9 @@ export default function AthletesClient({
                   className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="">Selecione o Atleta 2...</option>
-                  {athletesList.map((a) => (
+                  {selectableModalAthletes.map((a) => (
                     <option key={a.id} value={a.id}>
-                      {a.fullName} ({a.club || "Sem clube"})
+                      {a.fullName} • [{a.gender === "MALE" ? "Masc" : a.gender === "FEMALE" ? "Fem" : "Outro"}] ({a.club || "Sem clube"})
                     </option>
                   ))}
                 </select>
@@ -759,12 +867,60 @@ export default function AthletesClient({
               Atualize os atletas componentes, ranking ou status de inscrição
             </p>
 
+            <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-[11px] text-cyan-200 flex items-start gap-2 mb-4">
+              <Sparkles className="w-4 h-4 text-[#00D2FF] shrink-0 mt-0.5" />
+              <span>
+                <strong>Edição Sem Restrição de Gênero:</strong> Você pode alterar a dupla escolhendo qualquer atleta cadastrado do banco global.
+              </span>
+            </div>
+
             {errorMessage && (
               <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{errorMessage}</span>
               </div>
             )}
+
+            {/* Filtro Rápido de Atletas por Gênero */}
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#08111B] border border-[#162D4A] mb-3 w-fit">
+              <span className="text-[10px] text-slate-400 font-bold px-2 flex items-center gap-1">
+                <Filter className="w-3 h-3 text-[#00D2FF]" />
+                Filtrar Atletas:
+              </span>
+              <button
+                type="button"
+                onClick={() => setModalAthleteGenderFilter("ALL")}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+                  modalAthleteGenderFilter === "ALL"
+                    ? "bg-[#00D2FF] text-[#060B12]"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Todos ({totalAthletesCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalAthleteGenderFilter("MALE")}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+                  modalAthleteGenderFilter === "MALE"
+                    ? "bg-[#00D2FF] text-[#060B12]"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Masculino ({maleAthletesCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalAthleteGenderFilter("FEMALE")}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+                  modalAthleteGenderFilter === "FEMALE"
+                    ? "bg-[#00D2FF] text-[#060B12]"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Feminino ({femaleAthletesCount})
+              </button>
+            </div>
 
             <form onSubmit={handleSaveEditedPair} className="space-y-4 text-xs">
               <div>
@@ -779,9 +935,9 @@ export default function AthletesClient({
                   }
                   className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 >
-                  {athletesList.map((a) => (
+                  {selectableModalAthletes.map((a) => (
                     <option key={a.id} value={a.id}>
-                      {a.fullName} ({a.club || "Sem clube"})
+                      {a.fullName} • [{a.gender === "MALE" ? "Masc" : a.gender === "FEMALE" ? "Fem" : "Outro"}] ({a.club || "Sem clube"})
                     </option>
                   ))}
                 </select>
@@ -799,9 +955,9 @@ export default function AthletesClient({
                   }
                   className="w-full bg-[#08111B] border border-[#162D4A] rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 >
-                  {athletesList.map((a) => (
+                  {selectableModalAthletes.map((a) => (
                     <option key={a.id} value={a.id}>
-                      {a.fullName} ({a.club || "Sem clube"})
+                      {a.fullName} • [{a.gender === "MALE" ? "Masc" : a.gender === "FEMALE" ? "Fem" : "Outro"}] ({a.club || "Sem clube"})
                     </option>
                   ))}
                 </select>

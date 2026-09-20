@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Trophy, Tv, Calendar, MapPin, Users, ArrowRight, PlusCircle, CheckCircle2, Shield } from "lucide-react";
 import CreateTournamentModal from "@/components/CreateTournamentModal";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,7 @@ export default async function HomePage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <CreateTournamentModal />
           </div>
         </div>

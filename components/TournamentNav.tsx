@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   SlidersHorizontal,
 } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface TournamentNavProps {
   tournamentId: string;
@@ -115,6 +116,9 @@ export default function TournamentNav({
               <SlidersHorizontal className="w-4 h-4 text-cyan-300" />
               <span className="hidden sm:inline">Operador Telão</span>
             </Link>
+
+            {/* Alternador Modo Dia / Noite */}
+            <ThemeToggle />
           </div>
         </div>
       </div>

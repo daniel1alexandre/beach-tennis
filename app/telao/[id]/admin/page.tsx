@@ -20,6 +20,7 @@ import {
   Undo2,
   XCircle,
 } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function ArenaOperatorAdminPage() {
   const params = useParams();
@@ -204,6 +205,8 @@ export default function ArenaOperatorAdminPage() {
               <span>{actionMessage}</span>
             </div>
           )}
+
+          <ThemeToggle />
 
           <Link
             href={`/telao/${tournamentId}`}

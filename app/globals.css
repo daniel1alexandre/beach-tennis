@@ -66,6 +66,117 @@ body {
   border: 1px dashed #213652;
 }
 
+/* ========================================= */
+/* MODO DIA / LIGHT THEME STYLES (ALTA NITIDEZ) */
+/* ========================================= */
+html.light, html.light body {
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+}
+
+html.light header {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+html.light .bg-\[\#060B12\] {
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+}
+
+html.light .bg-\[\#0C1726\],
+html.light .bg-\[\#0A1424\]\/90,
+html.light .bg-\[\#0A1424\]\/80,
+html.light .bg-\[\#0A1628\],
+html.light .bg-\[\#0A131F\] {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .bg-\[\#08111B\],
+html.light .bg-\[\#09111C\],
+html.light .bg-\[\#0B1523\],
+html.light .bg-\[\#0A121E\],
+html.light .bg-\[\#101F33\],
+html.light .bg-\[\#0C192E\],
+html.light .bg-\[\#0E2038\] {
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+
+html.light .border-\[\#162D4A\],
+html.light .border-\[\#182C46\],
+html.light .border-\[\#163359\],
+html.light .border-\[\#13253C\],
+html.light .border-\[\#15263D\],
+html.light .border-\[\#1E3A5F\] {
+  border-color: #E2E8F0 !important;
+}
+
+html.light .text-white {
+  color: #0F172A !important;
+}
+
+html.light .text-slate-400,
+html.light .text-zinc-400 {
+  color: #64748B !important;
+}
+
+html.light .text-slate-300,
+html.light .text-zinc-300 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-200,
+html.light .text-zinc-200 {
+  color: #1E293B !important;
+}
+
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94A3B8 !important;
+}
+
+html.light .divide-\[\#13253C\] > * + * {
+  border-color: #E2E8F0 !important;
+}
+
+html.light table thead tr {
+  background-color: #F1F5F9 !important;
+  color: #1E293B !important;
+}
+
+html.light table th {
+  background-color: #F1F5F9 !important;
+  color: #1E293B !important;
+}
+
+html.light table tr:hover {
+  background-color: #E2E8F0/50 !important;
+}
+
+html.light ::-webkit-scrollbar-track {
+  background: #E2E8F0;
+}
+html.light ::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
 /* Print Styles */
 @media print {
   body {
