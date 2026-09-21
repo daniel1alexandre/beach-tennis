@@ -66,76 +66,290 @@ body {
   border: 1px dashed #213652;
 }
 
-/* ========================================= */
-/* MODO DIA / LIGHT THEME STYLES (ALTA NITIDEZ) */
-/* ========================================= */
+/* ========================================================================== */
+/* MODO DIA / LIGHT THEME STYLES (SUAVE, CONFORTÁVEL E COM ALTA VISIBILIDADE)  */
+/* ========================================================================== */
 html.light, html.light body {
-  background-color: #F8FAFC !important;
-  color: #0F172A !important;
+  background-color: #F1F5F9 !important; /* Fundo ardósia suave, sem claridade ofuscante */
+  color: #1E293B !important; /* Letras em carvão/ardósia escuro com altíssima nitidez */
 }
 
+/* Headers e Barras Fixas */
 html.light header {
   background-color: rgba(255, 255, 255, 0.95) !important;
-  border-color: #E2E8F0 !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-html.light .bg-\[\#060B12\] {
-  background-color: #F8FAFC !important;
-  color: #0F172A !important;
-}
-
-html.light .bg-\[\#0C1726\],
-html.light .bg-\[\#0A1424\]\/90,
-html.light .bg-\[\#0A1424\]\/80,
-html.light .bg-\[\#0A1628\],
-html.light .bg-\[\#0A131F\] {
-  background-color: #FFFFFF !important;
-  color: #0F172A !important;
-  border-color: #E2E8F0 !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
-}
-
-html.light .bg-\[\#08111B\],
-html.light .bg-\[\#09111C\],
-html.light .bg-\[\#0B1523\],
-html.light .bg-\[\#0A121E\],
-html.light .bg-\[\#101F33\],
-html.light .bg-\[\#0C192E\],
-html.light .bg-\[\#0E2038\] {
-  background-color: #F1F5F9 !important;
-  color: #0F172A !important;
   border-color: #CBD5E1 !important;
+  box-shadow: 0 1px 4px 0 rgba(15, 23, 42, 0.06) !important;
 }
 
-html.light .border-\[\#162D4A\],
-html.light .border-\[\#182C46\],
-html.light .border-\[\#163359\],
-html.light .border-\[\#13253C\],
-html.light .border-\[\#15263D\],
-html.light .border-\[\#1E3A5F\] {
-  border-color: #E2E8F0 !important;
+/* Hero Section e Banners com Gradientes */
+html.light section[class*="from-[#0A1628]"],
+html.light div[class*="from-[#0C192E]"],
+html.light .bg-gradient-to-b.from-\[\#0A1628\].to-\[\#060B12\],
+html.light .bg-gradient-to-r.from-\[\#0C192E\].via-\[\#0D213F\].to-\[\#081220\] {
+  background: linear-gradient(135deg, #FFFFFF 0%, #E8EEF5 100%) !important;
+  border-color: #CBD5E1 !important;
+  box-shadow: 0 4px 12px 0 rgba(15, 23, 42, 0.05) !important;
 }
 
-html.light .text-white {
-  color: #0F172A !important;
-}
-
-html.light .text-slate-400,
-html.light .text-zinc-400 {
-  color: #64748B !important;
-}
-
-html.light .text-slate-300,
-html.light .text-zinc-300 {
-  color: #334155 !important;
-}
-
-html.light .text-slate-200,
-html.light .text-zinc-200 {
+/* Backgrounds Principais e Superfícies de Cards */
+html.light .bg-\[\#060B12\],
+html.light .bg-\[\#060b12\] {
+  background-color: #F1F5F9 !important;
   color: #1E293B !important;
 }
 
+/* Cards e Paineis Brancos Elevados */
+html.light .bg-\[\#0C1726\],
+html.light [class*="bg-[#0C1726]"],
+html.light [class*="bg-[#0c1726]"],
+html.light [class*="bg-[#0A1424]"],
+html.light [class*="bg-[#0A1628]"],
+html.light [class*="bg-[#0A131F]"],
+html.light [class*="bg-[#0A1422]"],
+html.light .glass-card,
+html.light .glass-panel {
+  background-color: #FFFFFF !important;
+  color: #1E293B !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Caixas Internas, Inputs e Sub-paineis */
+html.light [class*="bg-[#08111B]"],
+html.light [class*="bg-[#08111b]"],
+html.light [class*="bg-[#08101A]"],
+html.light [class*="bg-[#070C09]"],
+html.light [class*="bg-[#09111C]"],
+html.light [class*="bg-[#0B1523]"],
+html.light [class*="bg-[#0A121E]"],
+html.light [class*="bg-[#101F33]"],
+html.light [class*="bg-[#0E1D31]"],
+html.light [class*="bg-[#0E1F35]"],
+html.light [class*="bg-[#0E2038]"],
+html.light [class*="bg-[#111F32]"],
+html.light [class*="bg-[#13233A]"],
+html.light [class*="bg-[#13253C]"],
+html.light [class*="bg-[#14100D]"],
+html.light [class*="bg-[#14120E]"],
+html.light [class*="bg-[#162D4A]"],
+html.light [class*="bg-[#182E4B]"],
+html.light .card-free {
+  background-color: #F8FAFC !important;
+  color: #1E293B !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* Pílulas de Categorias Inativas */
+html.light .bg-\[\#0C1726\]\/60 {
+  background-color: #E2E8F0 !important;
+  color: #334155 !important;
+  border-color: #CBD5E1 !important;
+}
+
+html.light .bg-\[\#0C1726\]\/60:hover {
+  background-color: #CBD5E1 !important;
+  color: #0F172A !important;
+}
+
+/* Bordas de Separação */
+html.light [class*="border-[#162D4A]"],
+html.light [class*="border-[#182C46]"],
+html.light [class*="border-[#163359]"],
+html.light [class*="border-[#13253C]"],
+html.light [class*="border-[#15263D]"],
+html.light [class*="border-[#15231B]"],
+html.light [class*="border-[#16273C]"],
+html.light [class*="border-[#1B2F4A]"],
+html.light [class*="border-[#1D3656]"],
+html.light [class*="border-[#1E3A5F]"] {
+  border-color: #CBD5E1 !important;
+}
+
+/* ========================================================================== */
+/* TIPOGRAFIA & CORES DAS LETRAS (ALTA VISIBILIDADE, SUAVE E ELEGANTE)        */
+/* ========================================================================== */
+
+/* Títulos Principais e Destaques */
+html.light .text-white,
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light h5,
+html.light h6 {
+  color: #0F172A !important; /* Carvão ardósia profundo suave */
+}
+
+/* Textos Secundários e Metadados (Não deixar cinza claro apagado) */
+html.light .text-slate-400,
+html.light .text-zinc-400,
+html.light .text-gray-400,
+html.light .text-slate-500,
+html.light .text-zinc-500,
+html.light .text-gray-500 {
+  color: #475569 !important; /* Slate-600: Ótima visibilidade e leitura confortável */
+}
+
+html.light .text-slate-300,
+html.light .text-zinc-300,
+html.light .text-gray-300 {
+  color: #334155 !important; /* Slate-700 */
+}
+
+html.light .text-slate-200,
+html.light .text-zinc-200,
+html.light .text-slate-100 {
+  color: #1E293B !important; /* Slate-800 */
+}
+
+/* Textos em Ciano / Azul Neon: Transformam-se em Azul Oceano Profundo */
+html.light .text-\[\#00D2FF\],
+html.light .text-\[\#33DDFF\],
+html.light .text-cyan-400,
+html.light .text-cyan-300,
+html.light .text-cyan-200,
+html.light .text-sky-400,
+html.light .text-sky-300 {
+  color: #0284C7 !important; /* Sky-600 / Azul Oceano de alto contraste */
+}
+
+html.light .text-cyan-500,
+html.light .text-\[\#0099FF\] {
+  color: #0369A1 !important; /* Sky-700 */
+}
+
+html.light svg.text-\[\#00D2FF\],
+html.light svg.text-cyan-400,
+html.light svg.text-cyan-300 {
+  color: #0284C7 !important;
+}
+
+/* Cores de Ênfase e Categorias */
+html.light .text-amber-300,
+html.light .text-amber-400,
+html.light .text-yellow-300,
+html.light .text-yellow-400 {
+  color: #B45309 !important; /* Amber-700 / Dourado escuro */
+}
+
+html.light .text-emerald-300,
+html.light .text-emerald-400,
+html.light .text-green-300,
+html.light .text-green-400 {
+  color: #047857 !important; /* Emerald-700 */
+}
+
+html.light .text-red-400,
+html.light .text-red-300 {
+  color: #B91C1C !important; /* Red-700 */
+}
+
+html.light .text-fuchsia-300,
+html.light .text-fuchsia-400,
+html.light .text-pink-300,
+html.light .text-pink-400 {
+  color: #86198F !important; /* Fuchsia-700 */
+}
+
+html.light .text-violet-300,
+html.light .text-violet-400,
+html.light .text-purple-300,
+html.light .text-purple-400 {
+  color: #6D28D9 !important; /* Violet-700 */
+}
+
+html.light .text-orange-300,
+html.light .text-orange-400 {
+  color: #C2410C !important; /* Orange-700 */
+}
+
+/* ========================================================================== */
+/* BADGES, PÍLULAS E NAVEGAÇÃO                                                */
+/* ========================================================================== */
+
+/* Pílulas de Cyan / Azul */
+html.light [class*="bg-cyan-500/"],
+html.light [class*="bg-sky-500/"],
+html.light [class*="bg-cyan-950/"] {
+  background-color: #E0F2FE !important;
+  color: #0369A1 !important;
+  border-color: #BAE6FD !important;
+}
+
+/* Pílulas de Amber */
+html.light [class*="bg-amber-500/"],
+html.light [class*="bg-amber-950/"] {
+  background-color: #FEF3C7 !important;
+  color: #92400E !important;
+  border-color: #FDE68A !important;
+}
+
+/* Pílulas de Verde */
+html.light [class*="bg-emerald-500/"],
+html.light [class*="bg-emerald-950/"] {
+  background-color: #D1FAE5 !important;
+  color: #065F46 !important;
+  border-color: #A7F3D0 !important;
+}
+
+/* Pílulas de Vermelho */
+html.light [class*="bg-red-500/"] {
+  background-color: #FEE2E2 !important;
+  color: #991B1B !important;
+  border-color: #FECACA !important;
+}
+
+/* Pílulas de Fuchsia / Violeta */
+html.light [class*="bg-fuchsia-500/"],
+html.light [class*="bg-fuchsia-950/"] {
+  background-color: #FDF4FF !important;
+  color: #86198F !important;
+  border-color: #F5D0FE !important;
+}
+
+html.light [class*="bg-violet-500/"],
+html.light [class*="bg-violet-950/"] {
+  background-color: #F5F3FF !important;
+  color: #6D28D9 !important;
+  border-color: #DDD6FE !important;
+}
+
+html.light [class*="bg-orange-500/"],
+html.light [class*="bg-orange-950/"] {
+  background-color: #FFF7ED !important;
+  color: #C2410C !important;
+  border-color: #FED7AA !important;
+}
+
+/* Abas de Navegação em TournamentNav */
+html.light nav a.text-zinc-400,
+html.light nav a[class*="text-zinc-400"],
+html.light nav button[class*="text-zinc-400"] {
+  color: #475569 !important;
+}
+
+html.light nav a:hover,
+html.light nav button:hover {
+  background-color: #E2E8F0 !important;
+  color: #0F172A !important;
+}
+
+/* Abas de Navegação Ativas */
+html.light nav a[class*="bg-cyan-500/15"] {
+  background-color: #E0F2FE !important;
+  color: #0369A1 !important;
+  border-color: #7DD3FC !important;
+  box-shadow: 0 1px 3px rgba(3, 105, 161, 0.15) !important;
+}
+
+/* Botões de Ação Primários (Gradiente Ciano permanece vibrante) */
+html.light .bg-gradient-to-r.from-\[\#00D2FF\].to-\[\#0099FF\],
+html.light button.bg-gradient-to-r {
+  color: #060B12 !important;
+  font-weight: 800 !important;
+}
+
+/* Formulários e Inputs */
 html.light input,
 html.light select,
 html.light textarea {
@@ -144,34 +358,46 @@ html.light textarea {
   border-color: #CBD5E1 !important;
 }
 
-html.light input::placeholder,
-html.light textarea::placeholder {
-  color: #94A3B8 !important;
+html.light input:focus,
+html.light select:focus,
+html.light textarea:focus {
+  border-color: #0284C7 !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2) !important;
 }
 
-html.light .divide-\[\#13253C\] > * + * {
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #64748B !important;
+}
+
+/* Tabelas e Linhas */
+html.light table thead tr,
+html.light table th {
+  background-color: #F1F5F9 !important;
+  color: #334155 !important;
+  border-color: #CBD5E1 !important;
+}
+
+html.light table tbody tr {
   border-color: #E2E8F0 !important;
 }
 
-html.light table thead tr {
-  background-color: #F1F5F9 !important;
-  color: #1E293B !important;
+html.light table tbody tr:hover {
+  background-color: #F8FAFC !important;
 }
 
-html.light table th {
-  background-color: #F1F5F9 !important;
-  color: #1E293B !important;
+html.light .divide-\[\#13253C\] > * + *,
+html.light .divide-\[\#162D4A\] > * + * {
+  border-color: #E2E8F0 !important;
 }
 
-html.light table tr:hover {
-  background-color: #E2E8F0/50 !important;
-}
-
+/* Scrollbars no Modo Dia */
 html.light ::-webkit-scrollbar-track {
   background: #E2E8F0;
 }
 html.light ::-webkit-scrollbar-thumb {
   background: #CBD5E1;
+  border-radius: 4px;
 }
 html.light ::-webkit-scrollbar-thumb:hover {
   background: #94A3B8;

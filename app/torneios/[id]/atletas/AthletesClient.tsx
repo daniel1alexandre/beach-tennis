@@ -388,7 +388,7 @@ export default function AthletesClient({
                       : "bg-[#0C1726]/60 text-slate-400 border border-[#162D4A] hover:text-slate-200"
                   }`}
                   style={{
-                    borderColor: isSelected ? (cat.color || catTheme.hex) : "#162D4A",
+                    borderColor: isSelected ? (cat.color || catTheme.hex) : undefined,
                     boxShadow: isSelected ? `0 0 15px ${(cat.color || catTheme.hex)}33` : undefined,
                   }}
                 >
